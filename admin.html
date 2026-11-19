@@ -1,0 +1,1337 @@
+<!DOCTYPE html>
+<html lang="es" data-bs-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Panel de Administración — Rines y Llantas GT Pro</title>
+    
+    <link rel="icon" type="image/png" href="imagenes/favicon.png">
+    <link rel="apple-touch-icon" href="imagenes/app-icon-192.png">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#8C1F1F">
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.min.css">
+    
+    <style>
+        :root {
+            --rojo-principal: #8C1F1F;
+            --rojo-oscuro: #540D0D;
+            --rojo-vivo: #b30000;
+            --rojo-suave: #fff1f1;
+            --sidebar-width: 285px;
+            --texto-principal: #0f172a;
+            --texto-secundario: #475569;
+            --texto-muted: #64748b;
+            --fondo-gris: #f4f6f9;
+            --card-border: #e2e8f0;
+            --sidebar-bg: #0f1115;
+            --sidebar-header: #0a0c0f;
+            --sidebar-border: #1e2229;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body { 
+            background-color: var(--fondo-gris) !important; 
+            color: var(--texto-principal) !important;
+            font-family: 'Montserrat', sans-serif !important;
+            min-height: 100vh;
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+        }
+
+        /* ==================== MENÚ LATERAL IZQUIERDO ==================== */
+        .menu-lateral {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: var(--sidebar-width);
+            height: 100vh;
+            background: var(--sidebar-bg) !important;
+            border-right: 1px solid var(--sidebar-border);
+            padding: 0;
+            z-index: 1050;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 4px 0 25px rgba(0,0,0,0.35);
+        }
+
+        .menu-header {
+            flex-shrink: 0;
+            background: var(--sidebar-header);
+            border-bottom: 1px solid var(--sidebar-border);
+        }
+
+        .menu-titulo {
+            padding: 20px 20px 14px;
+            color: #ffffff !important;
+            font-weight: 900;
+            font-size: 1.12rem;
+            letter-spacing: 0.5px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .badge-admin {
+            font-size: 0.68rem;
+            background: linear-gradient(135deg, var(--rojo-vivo), var(--rojo-principal)) !important;
+            color: #ffffff !important;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-weight: 800;
+            letter-spacing: 0.6px;
+            box-shadow: 0 2px 8px rgba(179,0,0,0.4);
+        }
+
+        .perfil-lateral {
+            padding: 12px 20px 14px;
+            background: #14171d;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-top: 1px solid var(--sidebar-border);
+        }
+
+        .perfil-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, var(--rojo-vivo), var(--rojo-oscuro));
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 900;
+            font-size: 0.95rem;
+            border: 2px solid rgba(255,255,255,0.15);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            flex-shrink: 0;
+        }
+
+        .menu-nav-scroll {
+            flex: 1;
+            overflow-y: auto;
+            overflow-x: hidden;
+            padding: 14px 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+        }
+
+        /* Barra de desplazamiento elegante en el menú */
+        .menu-nav-scroll::-webkit-scrollbar {
+            width: 5px;
+        }
+        .menu-nav-scroll::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .menu-nav-scroll::-webkit-scrollbar-thumb {
+            background: #2b303c;
+            border-radius: 4px;
+        }
+        .menu-nav-scroll::-webkit-scrollbar-thumb:hover {
+            background: var(--rojo-principal);
+        }
+
+        .menu-seccion-label {
+            font-size: 0.68rem;
+            font-weight: 800;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            padding: 12px 10px 6px 10px;
+            user-select: none;
+        }
+
+        .menu-opcion-btn {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            width: 100%;
+            padding: 10px 12px;
+            color: #cbd5e1 !important;
+            background: transparent;
+            border: none;
+            border-radius: 10px;
+            text-align: left;
+            font-size: 0.88rem;
+            font-weight: 600;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            text-decoration: none;
+            position: relative;
+        }
+
+        .menu-opcion-btn .menu-icon-box {
+            width: 34px;
+            height: 34px;
+            border-radius: 8px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.05);
+            color: #ff5252;
+            font-size: 1.05rem;
+            transition: all 0.2s;
+            flex-shrink: 0;
+        }
+
+        .menu-opcion-btn:hover {
+            background: rgba(255, 255, 255, 0.06) !important;
+            color: #ffffff !important;
+            transform: translateX(3px);
+        }
+
+        .menu-opcion-btn:hover .menu-icon-box {
+            background: rgba(140, 31, 31, 0.35);
+            color: #ffffff;
+        }
+
+        .menu-opcion-btn.activa {
+            background: linear-gradient(90deg, var(--rojo-principal) 0%, #a82020 100%) !important;
+            color: #ffffff !important;
+            font-weight: 700;
+            box-shadow: 0 4px 14px rgba(140, 31, 31, 0.4);
+        }
+
+        .menu-opcion-btn.activa .menu-icon-box {
+            background: rgba(255, 255, 255, 0.2);
+            color: #ffffff;
+        }
+
+        .menu-footer {
+            flex-shrink: 0;
+            padding: 14px 16px;
+            background: var(--sidebar-header);
+            border-top: 1px solid var(--sidebar-border);
+        }
+
+        .cerrar-sesion-btn {
+            width: 100%;
+            padding: 11px 16px;
+            color: #ffffff !important;
+            background: #800c0c !important;
+            border: 1px solid #991212;
+            border-radius: 10px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            font-weight: 700;
+            font-size: 0.9rem;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 12px rgba(128, 12, 12, 0.25);
+        }
+
+        .cerrar-sesion-btn:hover {
+            background: #b30000 !important;
+            box-shadow: 0 4px 16px rgba(179, 0, 0, 0.45);
+            transform: translateY(-1px);
+        }
+
+        /* ==================== ÁREA DE CONTENIDO PRINCIPAL ==================== */
+        .contenido-principal {
+            margin-left: var(--sidebar-width);
+            padding: 24px 36px 60px 36px;
+            min-height: 100vh;
+            background-color: var(--fondo-gris);
+        }
+
+        /* TOPBAR INFORMATIVO SUPERIOR */
+        .topbar-admin {
+            background: #ffffff;
+            border-radius: 14px;
+            padding: 12px 22px;
+            margin-bottom: 24px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.03);
+            border: 1px solid var(--card-border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .panel-header-titulo {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 22px;
+            padding-bottom: 14px;
+            border-bottom: 1px solid #e2e8f0;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .seccion-panel { 
+            display: none; 
+        }
+        .seccion-panel.visible { 
+            display: block; 
+            animation: fadeIn 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ==================== TARJETAS DE RESUMEN ==================== */
+        .tarjeta-resumen {
+            background: #ffffff !important;
+            border-radius: 14px;
+            padding: 20px 22px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.03);
+            border: 1px solid var(--card-border);
+            position: relative;
+            overflow: hidden;
+            transition: all 0.2s ease;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 14px;
+        }
+
+        .tarjeta-resumen:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 22px rgba(0,0,0,0.06);
+            border-color: #cbd5e1;
+        }
+
+        .tarjeta-resumen h6 {
+            color: var(--texto-muted) !important;
+            font-size: 0.78rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+            margin-bottom: 6px;
+        }
+
+        .tarjeta-resumen .numero-grande {
+            font-size: 2.1rem;
+            font-weight: 900;
+            color: var(--texto-principal) !important;
+            margin: 0;
+            line-height: 1.1;
+        }
+
+        .tarjeta-resumen .card-icon-bubble {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            flex-shrink: 0;
+        }
+
+        .bubble-total { background: #eff6ff; color: #2563eb; }
+        .bubble-rines { background: #fef2f2; color: #dc2626; }
+        .bubble-llantas { background: #f1f5f9; color: #334155; }
+        .bubble-acc { background: #fffbeb; color: #d97706; }
+        .bubble-ventas { background: #f5f3ff; color: #7c3aed; }
+        .bubble-dinero { background: #f0fdf4; color: #16a34a; }
+
+        /* ==================== CONTENEDORES Y CAJAS ==================== */
+        .caja-blanca {
+            background: #ffffff !important;
+            border-radius: 16px;
+            padding: 26px 28px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.03);
+            border: 1px solid var(--card-border);
+            margin-bottom: 24px;
+            color: var(--texto-principal) !important;
+        }
+
+        /* ==================== TABLAS MODERNAS ==================== */
+        .tabla-moderna {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            background: #ffffff !important;
+            margin-bottom: 0;
+        }
+
+        .tabla-moderna th {
+            background: #181c24 !important;
+            color: #ffffff !important;
+            font-size: 0.78rem;
+            text-transform: uppercase;
+            letter-spacing: 0.7px;
+            padding: 13px 16px;
+            font-weight: 800;
+            border: none;
+            white-space: nowrap;
+        }
+
+        .tabla-moderna th:first-child { border-top-left-radius: 10px; }
+        .tabla-moderna th:last-child { border-top-right-radius: 10px; }
+
+        .tabla-moderna td {
+            padding: 13px 16px;
+            vertical-align: middle;
+            border-bottom: 1px solid #f1f5f9;
+            color: var(--texto-principal) !important;
+            font-size: 0.9rem;
+            font-weight: 600;
+            background: #ffffff !important;
+        }
+
+        .tabla-moderna tr:hover td {
+            background: #fbfcfd !important;
+        }
+
+        /* SKU MONOSPACE BADGE */
+        .sku-badge {
+            font-family: 'Consolas', 'Courier New', monospace;
+            background: #f1f5f9;
+            color: #0f172a;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            border: 1px solid #e2e8f0;
+            display: inline-block;
+        }
+
+        /* INPUTS Y FORMULARIOS */
+        .form-control, .form-select {
+            background-color: #ffffff !important;
+            color: var(--texto-principal) !important;
+            border: 1.5px solid #cbd5e1 !important;
+            font-weight: 600;
+            border-radius: 8px;
+            padding: 9px 13px;
+            font-size: 0.92rem;
+            transition: all 0.2s;
+        }
+
+        .form-control:focus, .form-select:focus {
+            border-color: var(--rojo-principal) !important;
+            box-shadow: 0 0 0 0.22rem rgba(140, 31, 31, 0.18) !important;
+            color: #000000 !important;
+        }
+
+        .form-control::placeholder {
+            color: #94a3b8 !important;
+            font-weight: 400;
+        }
+
+        label.form-label {
+            color: #1e293b !important;
+            font-weight: 700;
+            font-size: 0.84rem;
+            margin-bottom: 6px;
+        }
+
+        /* BOTONES GT PRO */
+        .btn-gt-primario {
+            background: linear-gradient(135deg, var(--rojo-principal), var(--rojo-oscuro)) !important;
+            color: #ffffff !important;
+            border: none;
+            padding: 9px 20px;
+            font-weight: 700;
+            font-size: 0.92rem;
+            border-radius: 8px;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 12px rgba(140, 31, 31, 0.3);
+            text-decoration: none;
+        }
+
+        .btn-gt-primario:hover {
+            background: #9e1414 !important;
+            color: #ffffff !important;
+            transform: translateY(-1px);
+            box-shadow: 0 6px 16px rgba(140, 31, 31, 0.4);
+        }
+
+        /* BADGES */
+        .badge-estado-activo {
+            background: #ecfdf5 !important;
+            color: #059669 !important;
+            border: 1px solid #a7f3d0;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.78rem;
+            font-weight: 700;
+        }
+
+        .badge-estado-inactivo {
+            background: #f1f5f9 !important;
+            color: #64748b !important;
+            border: 1px solid #cbd5e1;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.78rem;
+            font-weight: 700;
+        }
+
+        .badge-estado-pendiente {
+            background: #fffbeb !important;
+            color: #b45309 !important;
+            border: 1px solid #fde68a;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 700;
+        }
+
+        .badge-estado-atendido {
+            background: #eff6ff !important;
+            color: #1d4ed8 !important;
+            border: 1px solid #bfdbfe;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 700;
+        }
+
+        /* BOTONES DE FILTRO COTIZACIONES */
+        .btn-filtro-cot {
+            font-weight: 700;
+            font-size: 0.84rem;
+            padding: 6px 16px;
+            border-radius: 20px;
+            border: 1.5px solid #cbd5e1;
+            background: #ffffff;
+            color: #334155;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+        .btn-filtro-cot:hover {
+            background: #f8fafc;
+            border-color: #94a3b8;
+        }
+        .btn-filtro-cot.activo {
+            background: var(--rojo-principal) !important;
+            color: #ffffff !important;
+            border-color: var(--rojo-principal) !important;
+            box-shadow: 0 2px 8px rgba(140, 31, 31, 0.3);
+        }
+
+        /* Factura imprimible */
+        @media print {
+            body * { visibility: hidden; }
+            #areaFacturaImprimible, #areaFacturaImprimible * { visibility: visible; }
+            #areaFacturaImprimible { position: absolute; left: 0; top: 0; width: 100%; }
+            .no-imprimir { display: none !important; }
+        }
+        .factura-papel {
+            background: #ffffff;
+            padding: 35px;
+            border: 2px solid #ccc;
+            border-radius: 8px;
+            color: #111111;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- AVISO INTELIGENTE SI SE ABRE POR PROTOCOLO FILE:// -->
+    <div id="avisoProtocoloFile" style="display:none; background: linear-gradient(135deg, #b30000 0%, #540D0D 100%); color: #ffffff !important; padding: 14px 24px; position: sticky; top: 0; z-index: 9999; border-bottom: 3px solid #ffcc00; font-size: 0.95rem; box-shadow: 0 4px 15px rgba(0,0,0,0.4);">
+        <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
+            <div class="d-flex align-items-center gap-3">
+                <span style="font-size: 1.8rem;">⚠️</span>
+                <div>
+                    <strong style="font-size: 1.05rem;">Has abierto este panel como archivo local directo (<code>file://</code>).</strong><br>
+                    <span>Para que el sistema conecte en tiempo real con tu base de datos MySQL y PHP en Laragon, ábrelo desde tu servidor web local:</span>
+                </div>
+            </div>
+            <div class="d-flex gap-2 align-items-center flex-wrap">
+                <a href="http://localhost/rines-gt-pro/admin.html" class="btn btn-warning text-dark fw-bold px-3 py-2 shadow-sm">
+                    <i class="bi bi-box-arrow-up-right me-1"></i> Abrir en http://localhost/rines-gt-pro/admin.html
+                </a>
+                <a href="http://rines-gt-pro.test/admin.html" class="btn btn-outline-light fw-bold px-3 py-2">
+                    http://rines-gt-pro.test/admin.html
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- MENÚ LATERAL IZQUIERDO -->
+    <aside class="menu-lateral">
+        <div class="menu-header">
+            <div class="menu-titulo">
+                <a href="index.html" class="d-flex align-items-center gap-2 text-decoration-none">
+                    <img src="imagenes/logo-gt-pro.png" alt="Rines GT Pro" style="height:34px; object-fit:contain; filter:drop-shadow(0 2px 4px rgba(0,0,0,0.5));">
+                    <span style="color:#ffffff !important; font-weight:900; font-size:1.05rem;">GT <span>PRO</span></span>
+                </a>
+                <span class="badge-admin">ADMIN</span>
+            </div>
+            
+            <div class="perfil-lateral">
+                <div class="perfil-avatar">GT</div>
+                <div style="overflow: hidden;">
+                    <div style="color:#ffffff !important; font-weight:800; font-size:0.88rem; white-space:nowrap; text-overflow:ellipsis; overflow:hidden;" id="adminNombreTop">Administrador</div>
+                    <div style="color:#22c55e !important; font-size:0.75rem; font-weight:700;" class="d-flex align-items-center gap-1">
+                        <span style="display:inline-block; width:7px; height:7px; border-radius:50%; background:#22c55e;"></span>
+                        Base de Datos Activa
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <nav class="menu-nav-scroll">
+            <div class="menu-seccion-label">Módulos Administrativos</div>
+            
+            <button type="button" class="menu-opcion-btn activa" id="btnMenu-inventario" onclick="cambiarSeccionAdmin('inventario')">
+                <span class="menu-icon-box"><i class="bi bi-box-seam"></i></span>
+                <span>Inventario General</span>
+            </button>
+            
+            <button type="button" class="menu-opcion-btn" id="btnMenu-venta" onclick="cambiarSeccionAdmin('venta')">
+                <span class="menu-icon-box"><i class="bi bi-upc-scan"></i></span>
+                <span>Generar Venta (POS)</span>
+            </button>
+            
+            <button type="button" class="menu-opcion-btn" id="btnMenu-cotizaciones" onclick="cambiarSeccionAdmin('cotizaciones')">
+                <span class="menu-icon-box"><i class="bi bi-file-earmark-text"></i></span>
+                <span>Cotizaciones</span>
+            </button>
+            
+            <button type="button" class="menu-opcion-btn" id="btnMenu-reportes" onclick="cambiarSeccionAdmin('reportes')">
+                <span class="menu-icon-box"><i class="bi bi-bar-chart-line"></i></span>
+                <span>Reportes y Facturas</span>
+            </button>
+            
+            <button type="button" class="menu-opcion-btn" id="btnMenu-clientes" onclick="cambiarSeccionAdmin('clientes')">
+                <span class="menu-icon-box"><i class="bi bi-people"></i></span>
+                <span>Usuarios Registrados</span>
+            </button>
+            
+
+        </nav>
+
+        <div class="menu-footer">
+            <button type="button" class="cerrar-sesion-btn" onclick="cerrarSesionAdminSeguro()">
+                <i class="bi bi-box-arrow-right"></i>
+                <span>Cerrar Sesión</span>
+            </button>
+        </div>
+    </aside>
+
+    <!-- CONTENIDO PRINCIPAL -->
+    <main class="contenido-principal">
+
+        <!-- TOPBAR SUPERIOR INFORMATIVA -->
+        <div class="topbar-admin">
+            <div class="d-flex align-items-center gap-2">
+                <span class="text-dark fw-bold small" id="topbarSeccionActiva">Gestión de Inventario General</span>
+            </div>
+            <div class="d-flex align-items-center gap-2">
+                <span class="badge bg-light text-dark border px-3 py-2 fw-semibold">
+                    <i class="bi bi-geo-alt-fill text-danger me-1"></i> Sogamoso, Boyacá
+                </span>
+                <span class="badge bg-success-subtle text-success border border-success-subtle px-3 py-2 fw-bold">
+                    <i class="bi bi-circle-fill me-1" style="font-size:0.5rem; vertical-align:middle;"></i> Sistema Online
+                </span>
+            </div>
+        </div>
+
+        <!-- ==================== SECCIÓN 1: INVENTARIO ==================== -->
+        <div id="seccion-inventario" class="seccion-panel visible">
+            <div class="panel-header-titulo">
+                <div>
+                    <h2 class="h4 fw-bold text-dark m-0 d-flex align-items-center gap-2">
+                        <i class="bi bi-boxes text-danger"></i> Gestión de Inventario
+                    </h2>
+                    <p class="text-secondary small m-0 mt-1">Consulta existencias, precios, SKU, crea nuevos productos y gestiona la disponibilidad en tienda.</p>
+                </div>
+                <button class="btn-gt-primario" onclick="abrirModalProducto()">
+                    <i class="bi bi-plus-circle"></i> Nuevo Producto
+                </button>
+            </div>
+
+            <!-- TARJETAS RESUMEN DE STOCK -->
+            <div class="row g-3 mb-4">
+                <div class="col-sm-6 col-xl-3">
+                    <div class="tarjeta-resumen">
+                        <div>
+                            <h6>Total Productos</h6>
+                            <p class="numero-grande" id="invTotal">0</p>
+                        </div>
+                        <div class="card-icon-bubble bubble-total">
+                            <i class="bi bi-boxes"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-6 col-xl-3">
+                    <div class="tarjeta-resumen">
+                        <div>
+                            <h6>Rines Disponibles</h6>
+                            <p class="numero-grande text-danger" id="invRines">0</p>
+                        </div>
+                        <div class="card-icon-bubble bubble-rines">
+                            <i class="bi bi-record-circle"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-6 col-xl-3">
+                    <div class="tarjeta-resumen">
+                        <div>
+                            <h6>Llantas Disponibles</h6>
+                            <p class="numero-grande" id="invLlantas">0</p>
+                        </div>
+                        <div class="card-icon-bubble bubble-llantas">
+                            <i class="bi bi-circle"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-6 col-xl-3">
+                    <div class="tarjeta-resumen">
+                        <div>
+                            <h6>Accesorios</h6>
+                            <p class="numero-grande text-warning" id="invAcc">0</p>
+                        </div>
+                        <div class="card-icon-bubble bubble-acc">
+                            <i class="bi bi-tools"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- FILTRO Y BÚSQUEDA -->
+            <div class="caja-blanca">
+                <div class="row g-3 align-items-center mb-4">
+                    <div class="col-md-5">
+                        <label class="form-label">Buscar producto:</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-white" style="border:1.5px solid #cbd5e1; border-right:none;"><i class="bi bi-search text-secondary"></i></span>
+                            <input type="text" id="buscadorInventario" class="form-control" placeholder="Buscar por código SKU, nombre o categoría...">
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Filtrar por categoría:</label>
+                        <select id="filtroCategoriaInv" class="form-select">
+                            <option value="todas">Todas las categorías</option>
+                            <option value="rines">Rines</option>
+                            <option value="llantas">Llantas</option>
+                            <option value="accesorios">Accesorios</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3 text-end d-flex align-items-end">
+                        <button class="btn btn-dark w-100 fw-bold py-2" onclick="cargarInventario()">
+                            <i class="bi bi-arrow-clockwise me-1"></i> Recargar
+                        </button>
+                    </div>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="tabla-moderna">
+                        <thead>
+                            <tr>
+                                <th style="width: 70px;">Imagen</th>
+                                <th style="width: 130px;">Código SKU</th>
+                                <th>Producto y Descripción</th>
+                                <th style="width: 120px;">Categoría</th>
+                                <th style="width: 140px;">Precio Unitario</th>
+                                <th style="width: 120px;">Stock</th>
+                                <th style="width: 110px;">Estado</th>
+                                <th style="width: 130px;" class="text-center">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="cuerpoTablaInventario">
+                            <tr><td colspan="8" class="text-center py-4 text-dark fw-bold">Cargando inventario desde la base de datos...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================== SECCIÓN 2: GENERAR VENTA (POS) ==================== -->
+        <div id="seccion-venta" class="seccion-panel">
+            <div class="panel-header-titulo">
+                <div>
+                    <h2 class="h4 fw-bold text-dark m-0 d-flex align-items-center gap-2">
+                        <i class="bi bi-receipt-cutoff text-danger"></i> Terminal de Ventas y Facturación (POS)
+                    </h2>
+                    <p class="text-secondary small m-0 mt-1">Ingresa o escanea el código SKU del producto para cargar datos al instante, liquidar IVA y emitir la factura.</p>
+                </div>
+            </div>
+
+            <div class="row g-4">
+                <!-- Columna Izquierda: Escaneo y Agregado de Productos -->
+                <div class="col-lg-7">
+                    <div class="caja-blanca">
+                        <h5 style="font-weight:800; color:#111111; margin-bottom:12px;">
+                            <i class="bi bi-upc-scan text-danger me-2"></i> Escanear o Buscar Producto
+                        </h5>
+                        <p class="text-muted small mb-3">Escribe el código SKU o selecciónalo directamente para añadirlo a la factura actual:</p>
+                        
+                        <div class="row g-2 mb-3">
+                            <div class="col-md-8">
+                                <div class="input-group">
+                                    <span class="input-group-text bg-white" style="border:1.5px solid #cbd5e1; border-right:none;"><i class="bi bi-barcode text-dark fs-5"></i></span>
+                                    <input type="text" id="posCodigoInput" class="form-control form-control-lg" placeholder="Ej: GT-RIN-001 o GT-LLAN-001..." autofocus>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <button class="btn btn-gt-primario w-100 h-100 fs-6" onclick="buscarProductoPorCodigo()">
+                                    <i class="bi bi-search"></i> Buscar
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Chips rápidos para pruebas directas -->
+                        <div class="d-flex align-items-center gap-2 flex-wrap mb-4">
+                            <span class="small fw-bold text-secondary">Acceso rápido:</span>
+                            <button type="button" class="btn btn-sm btn-outline-secondary py-1 px-2 fw-semibold" onclick="posCargarCodigoRapido('GT-RIN-001')">GT-RIN-001</button>
+                            <button type="button" class="btn btn-sm btn-outline-secondary py-1 px-2 fw-semibold" onclick="posCargarCodigoRapido('GT-RIN-002')">GT-RIN-002</button>
+                            <button type="button" class="btn btn-sm btn-outline-secondary py-1 px-2 fw-semibold" onclick="posCargarCodigoRapido('GT-LLAN-001')">GT-LLAN-001</button>
+                            <button type="button" class="btn btn-sm btn-outline-secondary py-1 px-2 fw-semibold" onclick="posCargarCodigoRapido('GT-ACC-001')">GT-ACC-001</button>
+                        </div>
+
+                        <!-- Tarjeta de Producto Encontrado -->
+                        <div id="tarjetaProductoEncontrado" style="display:none; background:#ffffff; border-radius:12px; padding:20px; border:2px solid var(--rojo-principal);" class="mb-4 shadow-sm">
+                            <div class="row align-items-center">
+                                <div class="col-auto">
+                                    <img id="posPreviewImg" src="" style="width:90px; height:90px; object-fit:contain; border-radius:10px; border:1px solid #e2e8f0; background:#f8fafc; padding:4px;">
+                                </div>
+                                <div class="col">
+                                    <span class="sku-badge mb-1" id="posPreviewCodigo"></span>
+                                    <h5 id="posPreviewNombre" style="font-weight:900; color:#111111; margin:4px 0;"></h5>
+                                    <div class="text-secondary small fw-bold" id="posPreviewDesc"></div>
+                                    <div class="mt-2 d-flex align-items-center gap-3">
+                                        <span style="font-size:1.35rem; font-weight:900; color:var(--rojo-vivo);" id="posPreviewPrecio"></span>
+                                        <span class="badge bg-success-subtle text-success border border-success px-2 py-1" id="posPreviewStock"></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row g-2 align-items-center mt-3 pt-3 border-top">
+                                <div class="col-md-5">
+                                    <label class="form-label">Unidades a vender:</label>
+                                    <input type="number" id="posCantidadInput" class="form-control form-control-lg fw-bold text-center" min="1" value="1">
+                                </div>
+                                <div class="col-md-7 d-flex align-items-end">
+                                    <button class="btn btn-success btn-lg w-100 fw-bold" onclick="agregarItemAVenta()">
+                                        <i class="bi bi-cart-plus me-1"></i> Añadir a esta Factura
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Tabla de Items de la Venta Actual -->
+                        <h6 style="font-weight:800; color:#111111; margin-top:20px; margin-bottom:12px;">Productos en esta Factura</h6>
+                        <div class="table-responsive">
+                            <table class="tabla-moderna">
+                                <thead>
+                                    <tr>
+                                        <th>Producto</th>
+                                        <th>Precio Unit.</th>
+                                        <th style="width:130px;">Cant.</th>
+                                        <th>Subtotal</th>
+                                        <th class="text-center" style="width:70px;">Quitar</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="cuerpoItemsVenta">
+                                    <tr>
+                                        <td colspan="5" class="text-center py-4 text-dark fw-bold">Aún no has agregado productos a la venta.</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Columna Derecha: Datos del Cliente y Totales -->
+                <div class="col-lg-5">
+                    <div class="caja-blanca">
+                        <h5 style="font-weight:800; color:#111111; margin-bottom:18px;">
+                            <i class="bi bi-person-badge text-danger me-2"></i> Datos del Comprador
+                        </h5>
+
+                        <div class="mb-3">
+                            <label class="form-label">Seleccionar Cliente Registrado (Opcional):</label>
+                            <select id="posSelectorCliente" class="form-select" onchange="seleccionarClienteRegistrado()">
+                                <option value="">-- Cliente Mostrador / Nuevo --</option>
+                            </select>
+                        </div>
+
+                        <div class="row g-2 mb-2">
+                            <div class="col-md-6">
+                                <label class="form-label">Nombre Completo *</label>
+                                <input type="text" id="posClienteNombre" class="form-control" placeholder="Ej: Carlos Gómez" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Documento / Cédula</label>
+                                <input type="text" id="posClienteDoc" class="form-control" placeholder="1049...">
+                            </div>
+                        </div>
+
+                        <div class="row g-2 mb-2">
+                            <div class="col-md-6">
+                                <label class="form-label">Teléfono / WhatsApp</label>
+                                <input type="text" id="posClienteTel" class="form-control" placeholder="322 581 7510">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Correo Electrónico</label>
+                                <input type="email" id="posClienteEmail" class="form-control" placeholder="cliente@correo.com">
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Dirección de Entrega / Ciudad</label>
+                            <input type="text" id="posClienteDir" class="form-control" placeholder="Sogamoso, Boyacá">
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label">Método de Pago</label>
+                            <select id="posMetodoPago" class="form-select">
+                                <option value="Efectivo">💵 Efectivo</option>
+                                <option value="Tarjeta de Crédito / Débito">💳 Tarjeta Crédito / Débito</option>
+                                <option value="Transferencia (Nequi / Daviplata)">📱 Transferencia (Nequi / Daviplata)</option>
+                            </select>
+                        </div>
+
+                        <!-- LIQUIDACIÓN AUTOMÁTICA -->
+                        <div style="background:#111317; color:#ffffff; padding:22px; border-radius:12px; border:1px solid #2d333f;" class="mb-3 shadow-sm">
+                            <div class="d-flex justify-content-between mb-2 fs-6">
+                                <span style="color:#94a3b8;">Subtotal Venta:</span>
+                                <span class="fw-bold" id="posSubtotalTxt" style="color:#ffffff;">$0</span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-2 fs-6">
+                                <span style="color:#94a3b8;">IVA (19%):</span>
+                                <span class="fw-bold" id="posIvaTxt" style="color:#ffffff;">$0</span>
+                            </div>
+                            <hr style="border-color:#333a46; margin:14px 0;">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span style="font-size:1.05rem; font-weight:800; color:#f8fafc;">TOTAL FACTURADO:</span>
+                                <span style="font-size:1.75rem; font-weight:900; color:#ff4d4d;" id="posTotalTxt">$0</span>
+                            </div>
+                        </div>
+
+                        <button class="btn btn-gt-primario w-100 py-3" style="font-size:1.05rem;" onclick="confirmarVentaFactura()">
+                            <i class="bi bi-receipt-cutoff me-1"></i> Confirmar y Generar Factura
+                        </button>
+                        <p id="posMensajeEstado" class="text-center mt-2 fw-bold small"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================== SECCIÓN 3: COTIZACIONES ==================== -->
+        <div id="seccion-cotizaciones" class="seccion-panel">
+            <div class="panel-header-titulo">
+                <div>
+                    <h2 class="h4 fw-bold text-dark m-0 d-flex align-items-center gap-2">
+                        <i class="bi bi-file-earmark-text text-danger"></i> Cotizaciones Recibidas
+                    </h2>
+                    <p class="text-secondary small m-0 mt-1">Revisa las solicitudes generadas desde el catálogo, carrito y el Visualizador de Rines con IA.</p>
+                </div>
+                <div class="d-flex gap-2 flex-wrap">
+                    <button class="btn-filtro-cot activo" onclick="filtrarCotizacionesAdmin('todas', this)">Todas</button>
+                    <button class="btn-filtro-cot" onclick="filtrarCotizacionesAdmin('Pendiente', this)">Pendientes</button>
+                    <button class="btn-filtro-cot" onclick="filtrarCotizacionesAdmin('En Proceso', this)">En Proceso</button>
+                    <button class="btn-filtro-cot" onclick="filtrarCotizacionesAdmin('Atendida', this)">Atendidas</button>
+                </div>
+            </div>
+
+            <div class="caja-blanca">
+                <div id="contenedorListaCotizaciones">
+                    <p class="text-center py-4 text-dark fw-bold">Cargando cotizaciones...</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================== SECCIÓN 4: REPORTES Y FACTURAS ==================== -->
+        <div id="seccion-reportes" class="seccion-panel">
+            <div class="panel-header-titulo">
+                <div>
+                    <h2 class="h4 fw-bold text-dark m-0 d-flex align-items-center gap-2">
+                        <i class="bi bi-bar-chart-line text-danger"></i> Reportes y Facturación
+                    </h2>
+                    <p class="text-secondary small m-0 mt-1">Balance consolidado de ventas, recaudos y reimpresión de cualquier factura histórica emitida.</p>
+                </div>
+                <button class="btn btn-outline-dark fw-bold btn-sm" onclick="cargarReportesVentas()">
+                    <i class="bi bi-arrow-clockwise me-1"></i> Actualizar Reportes
+                </button>
+            </div>
+
+            <div class="row g-4 mb-4">
+                <div class="col-md-4">
+                    <div class="tarjeta-resumen">
+                        <div>
+                            <h6>Facturas y Pedidos</h6>
+                            <p class="numero-grande text-primary" id="repTotalVentasNum">0</p>
+                        </div>
+                        <div class="card-icon-bubble bubble-ventas">
+                            <i class="bi bi-receipt"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="tarjeta-resumen">
+                        <div>
+                            <h6>Pendientes por Aprobar</h6>
+                            <p class="numero-grande text-warning" id="repTotalPendientesNum">0</p>
+                        </div>
+                        <div class="card-icon-bubble" style="background:#fffbeb; color:#d97706;">
+                            <i class="bi bi-hourglass-split"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="tarjeta-resumen">
+                        <div>
+                            <h6>Recaudo Total ($ COP)</h6>
+                            <p class="numero-grande text-success" id="repTotalDineroTxt">$0</p>
+                        </div>
+                        <div class="card-icon-bubble bubble-dinero">
+                            <i class="bi bi-cash-stack"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="caja-blanca">
+                <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+                    <h5 style="font-weight:800; color:#111111; margin:0;">
+                        <i class="bi bi-box-seam me-1 text-danger"></i> Gestión de Pedidos, Ventas y Entregas
+                    </h5>
+                    <div class="d-flex gap-1 flex-wrap">
+                        <button class="btn btn-sm btn-outline-dark active fw-bold" onclick="filtrarPedidosAdmin('todos', this)">Todos</button>
+                        <button class="btn btn-sm btn-outline-warning fw-bold text-dark" onclick="filtrarPedidosAdmin('Pendiente', this)">⏳ En Proceso</button>
+                        <button class="btn btn-sm btn-outline-primary fw-bold" onclick="filtrarPedidosAdmin('Confirmado', this)">✓ Aceptadas</button>
+                        <button class="btn btn-sm btn-outline-info fw-bold text-dark" onclick="filtrarPedidosAdmin('En camino', this)">🚚 Enviadas</button>
+                        <button class="btn btn-sm btn-outline-dark fw-bold" style="color:#6f42c1; border-color:#6f42c1;" onclick="filtrarPedidosAdmin('Listo para recoger', this)">🏪 Apartadas</button>
+                        <button class="btn btn-sm btn-outline-success fw-bold" onclick="filtrarPedidosAdmin('Entregado', this)">★ Entregadas</button>
+                    </div>
+                </div>
+                <div class="table-responsive">
+                    <table class="tabla-moderna">
+                        <thead>
+                            <tr>
+                                <th>Factura & Canal</th>
+                                <th>Fecha</th>
+                                <th>Cliente & Correo</th>
+                                <th>Modalidad Entrega</th>
+                                <th>Total</th>
+                                <th>Estado</th>
+                                <th class="text-center">Aceptar y Notificar</th>
+                                <th class="text-center">Factura / Correo</th>
+                            </tr>
+                        </thead>
+                        <tbody id="cuerpoTablaReportes">
+                            <tr><td colspan="8" class="text-center py-4 text-dark fw-bold">Cargando reporte de pedidos...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================== SECCIÓN 5: CLIENTES REGISTRADOS ==================== -->
+        <div id="seccion-clientes" class="seccion-panel">
+            <div class="panel-header-titulo">
+                <div>
+                    <h2 class="h4 fw-bold text-dark m-0 d-flex align-items-center gap-2">
+                        <i class="bi bi-people text-danger"></i> Directorio de Usuarios y Clientes
+                    </h2>
+                    <p class="text-secondary small m-0 mt-1">Consulta los datos de contacto, teléfonos, compras acumuladas y cotizaciones registradas.</p>
+                </div>
+                <button class="btn btn-outline-dark fw-bold btn-sm" onclick="cargarClientesAdmin()">
+                    <i class="bi bi-arrow-clockwise me-1"></i> Recargar Clientes
+                </button>
+            </div>
+
+            <div class="caja-blanca">
+                <div class="table-responsive">
+                    <table class="tabla-moderna">
+                        <thead>
+                            <tr>
+                                <th style="width:60px;">ID</th>
+                                <th>Cliente</th>
+                                <th>Teléfono</th>
+                                <th>Ciudad / Dirección</th>
+                                <th>Fecha Registro</th>
+                                <th>Compras</th>
+                                <th>Total Invertido</th>
+                                <th class="text-center">Historial</th>
+                            </tr>
+                        </thead>
+                        <tbody id="cuerpoTablaClientes">
+                            <tr><td colspan="8" class="text-center py-4 text-dark fw-bold">Cargando clientes registrados...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- MODAL: AGREGAR / EDITAR PRODUCTO -->
+    <div class="modal fade" id="modalProducto" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content" style="color:#111111 !important;">
+                <div class="modal-header bg-dark text-white">
+                    <h5 class="modal-title fw-bold" id="modalProductoTitulo">Gestionar Producto</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <form id="formProductoAdmin" enctype="multipart/form-data">
+                        <input type="hidden" id="prodEditId" name="id" value="0">
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-4">
+                                <label class="form-label">Código SKU *</label>
+                                <input type="text" class="form-control" id="prodEditCodigo" name="codigo" placeholder="Ej: GT-RIN-005" required>
+                            </div>
+                            <div class="col-md-8">
+                                <label class="form-label">Nombre del Producto *</label>
+                                <input type="text" class="form-control" id="prodEditNombre" name="nombre" placeholder="Ej: Rin Deportivo Titan 20" required>
+                            </div>
+                        </div>
+
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-4">
+                                <label class="form-label">Categoría *</label>
+                                <select class="form-select" id="prodEditCat" name="categoria" required>
+                                    <option value="rines">Rines</option>
+                                    <option value="llantas">Llantas</option>
+                                    <option value="accesorios">Accesorios</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Precio Unitario ($ COP) *</label>
+                                <input type="number" class="form-control" id="prodEditPrecio" name="precio" min="1000" step="1000" required>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Stock en Inventario *</label>
+                                <input type="number" class="form-control" id="prodEditStock" name="stock" min="0" required>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Descripción / Características</label>
+                            <textarea class="form-control" id="prodEditDesc" name="descripcion" rows="3" placeholder="Detalles de aleación, medidas, compatibilidad..."></textarea>
+                        </div>
+
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Subir Imagen (Archivo)</label>
+                                <input type="file" class="form-control" id="prodEditArchivo" name="imagen_archivo" accept="image/*">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">O Ruta / URL de Imagen</label>
+                                <input type="text" class="form-control" id="prodEditUrl" name="imagen_url" placeholder="imagenes/rin-titan.png">
+                            </div>
+                        </div>
+
+                        <div class="form-check form-switch mb-3">
+                            <input class="form-check-input" type="checkbox" id="prodEditDisponible" name="disponible" value="1" checked>
+                            <label class="form-check-label fw-bold" for="prodEditDisponible">Producto Activo y Visible en Tienda Pública</label>
+                        </div>
+
+                        <div class="d-flex justify-content-end gap-2 pt-3 border-top">
+                            <button type="button" class="btn btn-secondary fw-bold" data-bs-dismiss="modal">Cancelar</button>
+                            <button type="submit" class="btn btn-gt-primario" id="btnGuardarProd">Guardar Producto</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: FACTURA ELECTRÓNICA IMPRIMIBLE -->
+    <div class="modal fade" id="modalFactura" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content" style="color:#111111 !important;">
+                <div class="modal-header bg-dark text-white no-imprimir">
+                    <h5 class="modal-title fw-bold">Factura de Venta Generada</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-4" id="areaFacturaImprimible">
+                    <div class="factura-papel">
+                        <div class="d-flex justify-content-between border-bottom pb-3 mb-3" style="border-bottom: 3px solid var(--rojo-principal) !important;">
+                            <div>
+                                <h2 style="font-weight:900; color:var(--rojo-principal); margin:0;">RINES & LLANTAS GT PRO</h2>
+                                <p style="margin:2px 0; color:#333; font-size:0.9rem; font-weight:600;">NIT: 901.458.712-4 — Régimen Común</p>
+                                <p style="margin:2px 0; color:#333; font-size:0.9rem;">Carrera 11 # 18-30, Sogamoso, Boyacá</p>
+                                <p style="margin:2px 0; color:#333; font-size:0.9rem;">Tel: (608) 770 1234 — WhatsApp: +57 322 581 7510</p>
+                            </div>
+                            <div class="text-end">
+                                <div style="font-size:1.5rem; font-weight:900; color:#111111;" id="facNumeroModal">FAC-2026-0001</div>
+                                <div style="color:#444; font-size:0.9rem; font-weight:600;" id="facFechaModal"></div>
+                                <span class="badge bg-success text-white mt-2 px-3 py-1 fs-6">PAGADO</span>
+                            </div>
+                        </div>
+
+                        <!-- Datos del Comprador -->
+                        <div class="row g-2 mb-4 p-3" style="background:#f4f6f8; border-radius:8px; border:1px solid #ddd;">
+                            <div class="col-md-6">
+                                <strong>Adquiriente / Cliente:</strong> <span id="facClienteNombre"></span><br>
+                                <strong>Identificación / CC:</strong> <span id="facClienteDoc"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <strong>Teléfono:</strong> <span id="facClienteTel"></span><br>
+                                <strong>Dirección:</strong> <span id="facClienteDir"></span><br>
+                                <strong>Método de Pago:</strong> <span id="facMetodoPago"></span>
+                            </div>
+                        </div>
+
+                        <!-- Detalle de Productos -->
+                        <table class="table table-bordered mb-4">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>Código</th>
+                                    <th>Descripción de Producto</th>
+                                    <th class="text-center">Cant.</th>
+                                    <th class="text-end">Precio Unit.</th>
+                                    <th class="text-end">Subtotal</th>
+                                </tr>
+                            </thead>
+                            <tbody id="facItemsTbody"></tbody>
+                            <tfoot>
+                                <tr>
+                                    <td colspan="4" class="text-end fw-bold">Subtotal:</td>
+                                    <td class="text-end fw-bold" id="facSubtotalVal">$0</td>
+                                </tr>
+                                <tr>
+                                    <td colspan="4" class="text-end fw-bold">IVA (19%):</td>
+                                    <td class="text-end fw-bold" id="facIvaVal">$0</td>
+                                </tr>
+                                <tr class="table-secondary">
+                                    <td colspan="4" class="text-end fw-bold fs-5">TOTAL FACTURADO:</td>
+                                    <td class="text-end fw-bold fs-5 text-danger" id="facTotalVal">$0</td>
+                                </tr>
+                            </tfoot>
+                        </table>
+
+                        <div class="text-center text-muted small mt-4 pt-3 border-top">
+                            <p style="margin:0; font-weight:600; color:#333;">¡Gracias por preferir a <strong>Rines y Llantas GT Pro</strong>! Garantía legal de 12 meses por defectos de fábrica.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer no-imprimir">
+                    <button type="button" class="btn btn-secondary fw-bold" data-bs-dismiss="modal">Cerrar</button>
+                    <button type="button" class="btn btn-gt-primario" onclick="window.print()">
+                        <i class="bi bi-printer"></i> Imprimir Factura (PDF)
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: DETALLE DE CLIENTE -->
+    <div class="modal fade" id="modalClienteDetalle" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content" style="color:#111111 !important;">
+                <div class="modal-header bg-dark text-white">
+                    <h5 class="modal-title fw-bold" id="modalClienteTitulo">Historial del Cliente</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-4" id="contenidoClienteDetalle">
+                    Cargando historial...
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: ACEPTAR PEDIDO Y ENVIAR NOTIFICACIÓN POR CORREO -->
+    <div class="modal fade" id="modalAceptarPedidoAdmin" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content" style="color:#111111 !important;">
+                <div class="modal-header bg-dark text-white">
+                    <h5 class="modal-title fw-bold" id="modalAceptarPedidoTitulo">
+                        <i class="bi bi-envelope-check text-warning me-2"></i> Aceptar Pedido y Notificar al Cliente
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <div class="alert alert-warning border-warning d-flex align-items-center gap-2 mb-3">
+                        <i class="bi bi-info-circle-fill fs-4 text-warning"></i>
+                        <div>
+                            Al aceptar este pedido, se actualizará el estado en el sistema y se le enviará un <strong>correo electrónico automático</strong> al cliente con los detalles de entrega o apartado.
+                        </div>
+                    </div>
+
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold">N° Factura / Pedido:</label>
+                            <input type="text" id="aceptarFacNum" class="form-control fw-bold bg-light" readonly>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold">Cliente Destinatario:</label>
+                            <input type="text" id="aceptarFacCliente" class="form-control bg-light" readonly>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold">Correo Electrónico del Cliente *:</label>
+                            <input type="email" id="aceptarFacEmail" class="form-control fw-bold" placeholder="cliente@correo.com">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold">Modalidad de Compra:</label>
+                            <input type="text" id="aceptarFacModalidad" class="form-control bg-light fw-bold" readonly>
+                        </div>
+                    </div>
+
+                    <div id="cajaAceptarGuiaDomicilio" class="p-3 bg-light rounded border border-info mb-3" style="display:none;">
+                        <label class="form-label small fw-bold text-primary">
+                            <i class="bi bi-truck me-1"></i> Número de Guía o Transportadora (Opcional):
+                        </label>
+                        <input type="text" id="aceptarGuiaTransporte" class="form-control" placeholder="Ej: Interrapidísimo #98234122 / Envía">
+                        <small class="text-muted">Si ingresas una guía, el correo dirá directamente: <strong>"¡Tu pedido va en camino!"</strong>.</small>
+                    </div>
+
+                    <div id="cajaAceptarFechaApartado" class="p-3 bg-light rounded border mb-3" style="display:none; border-color:#6f42c1;">
+                        <label class="form-label small fw-bold" style="color:#6f42c1;">
+                            <i class="bi bi-calendar-check-fill me-1"></i> Fecha de Recogida Programada en Taller:
+                        </label>
+                        <input type="date" id="aceptarFechaRecogida" class="form-control fw-bold">
+                        <small class="text-muted">El correo le notificará: <strong>"¡Tus rines ya fueron apartados en bodega para el día seleccionado!"</strong>.</small>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold">Mensaje o Nota Adicional para el Cliente (Opcional):</label>
+                        <textarea id="aceptarNotaAdmin" class="form-control" rows="2" placeholder="Ej: Tus rines ya quedaron apartados con pernos de seguridad..."></textarea>
+                    </div>
+
+                    <input type="hidden" id="aceptarVentaId">
+                    <input type="hidden" id="aceptarTipoEntrega">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-success fw-bold px-4 shadow" id="btnConfirmarAceptarPedido" onclick="confirmarAceptarPedidoModal()">
+                        <i class="bi bi-send-check-fill me-1"></i> Aceptar Pedido y Enviar Correo
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: VER CORREO ELECTRÓNICO ENVIADO -->
+    <div class="modal fade" id="modalVerCorreoEnviado" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content" style="color:#111111 !important;">
+                <div class="modal-header bg-dark text-white">
+                    <h5 class="modal-title fw-bold">
+                        <i class="bi bi-envelope-open-fill text-warning me-2"></i> Correo Notificado al Cliente
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-3 bg-light" id="contenidoVerCorreoEnviado">
+                    <div class="text-center py-5">
+                        <div class="spinner-border text-danger"></div> Cargando correo...
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="js/admin.js?v=4.0"></script>
+</body>
+</html>

@@ -1,0 +1,1120 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Visualizador Virtual — Rines y Llantas GT Pro</title>
+    
+    <link rel="icon" type="image/png" href="imagenes/favicon.png">
+    <link rel="apple-touch-icon" href="imagenes/app-icon-192.png">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#8C1F1F">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Rines GT Pro">
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="css/estilos.css?v=3.0">
+    <link rel="stylesheet" href="css/tutorial-avatar.css?v=3.0">
+    
+    <style>
+        :root {
+            --rojo-principal: #8C1F1F;
+            --rojo-oscuro: #4A0F0F;
+        }
+        body { 
+            background-color: #f4f6f9; 
+            font-family: 'Montserrat', sans-serif;
+        }
+        .banner-ia {
+            background: linear-gradient(135deg, #111 0%, #1f1f1f 100%);
+            color: white;
+            padding: 40px 0 30px;
+            border-bottom: 3px solid var(--rojo-principal);
+            text-align: center;
+        }
+        .zona-subida {
+            border: 2px dashed var(--rojo-principal);
+            border-radius: 16px;
+            padding: 35px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: white;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+        }
+        .zona-subida:hover {
+            background: #fff8f8;
+            transform: translateY(-2px);
+        }
+        .tarjeta-muestra-vehiculo {
+            cursor: pointer;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 2px solid #e0e0e0;
+            background: white;
+            transition: all 0.25s ease;
+            text-align: center;
+        }
+        .tarjeta-muestra-vehiculo:hover, .tarjeta-muestra-vehiculo.activa {
+            border-color: var(--rojo-principal);
+            transform: scale(1.03);
+            box-shadow: 0 6px 20px rgba(140,31,31,0.2);
+        }
+        .tarjeta-muestra-vehiculo img {
+            width: 100%;
+            height: 80px;
+            object-fit: cover;
+        }
+
+        /* Lienzo interactivo del carro y los rines */
+        .contenedor-lienzo-ia {
+            position: relative;
+            width: 100%;
+            background: #111;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            min-height: 380px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        #imgVehiculoBase {
+            width: 100%;
+            height: auto;
+            display: block;
+            border-radius: 16px;
+        }
+        .rin-overlay {
+            position: absolute;
+            transform-origin: center center;
+            pointer-events: auto;
+            cursor: move;
+            filter: drop-shadow(0 4px 10px rgba(0,0,0,0.6));
+            transition: width 0.1s;
+            user-select: none;
+        }
+        .rin-overlay.trasero {
+            /* Rin rueda trasera */
+        }
+        .rin-overlay.delantero {
+            /* Rin rueda delantera */
+        }
+        #imgGeneradaFinal {
+            width: 100%;
+            height: auto;
+            border-radius: 16px;
+            display: none;
+        }
+
+        .tarjeta-rin-seleccion {
+            cursor: pointer;
+            border-radius: 12px;
+            border: 2px solid #eef0f3;
+            background: white;
+            padding: 14px;
+            text-align: center;
+            transition: all 0.25s ease;
+        }
+        .tarjeta-rin-seleccion:hover, .tarjeta-rin-seleccion.activa {
+            border-color: var(--rojo-principal);
+            background: #fff8f8;
+            transform: translateY(-3px);
+            box-shadow: 0 6px 15px rgba(140,31,31,0.15);
+        }
+        .tarjeta-rin-seleccion img {
+            width: 85px;
+            height: 85px;
+            object-fit: contain;
+            margin-bottom: 8px;
+        }
+
+        .caja-analisis-ia {
+            background: linear-gradient(135deg, #1b263b 0%, #0d1b2a 100%);
+            color: white;
+            border-radius: 14px;
+            padding: 22px;
+            margin-top: 20px;
+            border-left: 5px solid #00b4d8;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- NAVEGACIÓN -->
+    <nav class="navbar navbar-expand-lg fixed-top">
+        <div class="container">
+            <a class="navbar-brand d-flex align-items-center gap-2" href="index.html">
+                <img src="imagenes/logo-gt-pro.png" alt="Rines y Llantas GT Pro" class="logo-navbar">
+                <span class="logo-texto d-none d-sm-inline">RINES & LLANTAS GT <span>PRO</span></span>
+            </a>
+            <button class="navbar-toggler text-white" type="button" data-bs-toggle="collapse" data-bs-target="#navVisualizador">
+                <span class="navbar-toggler-icon" style="filter:invert(1);"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navVisualizador">
+                <ul class="navbar-nav ms-auto align-items-center">
+                    <li class="nav-item"><a class="nav-link" href="index.html">Inicio</a></li>
+                    <li class="nav-item"><a class="nav-link" href="catalogo.html">Catálogo</a></li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="visualizador.html" style="color:#ffd700 !important;">
+                            <i class="bi bi-car-front-fill me-1"></i> Visualizador Virtual
+                        </a>
+                    </li>
+                    <li class="nav-item ms-lg-3">
+                        <a class="btn btn-outline-light btn-sm px-3" href="login.html" id="btnSesionVis">
+                            <i class="bi bi-box-arrow-in-right"></i> Ingresar
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- BANNER -->
+    <header class="banner-ia">
+        <div class="container">
+            <span class="badge bg-danger px-3 py-2 mb-2 fw-bold"><i class="bi bi-cpu"></i> TECNOLOGÍA IA AUTOMOTRIZ</span>
+            <h1 style="font-weight:900;" class="mb-2">Visualizador Virtual de Rines con IA</h1>
+            <p style="color:#ccc; max-width:700px; margin:0 auto;">
+                Sube la foto de tu carro o selecciona un modelo muestra, elige tus rines preferidos y la Inteligencia Artificial generará una imagen realista de cómo lucirá instalado.
+            </p>
+        </div>
+    </header>
+
+    <!-- CONTENEDOR DE PASOS -->
+    <main class="py-5">
+        <div class="container">
+            
+            <!-- PASO 1: SELECCIONAR FOTO DEL VEHÍCULO -->
+            <div class="row g-4 mb-5">
+                <div class="col-lg-6">
+                    <h4 style="font-weight:800; color:var(--rojo-oscuro);">
+                        <span class="badge bg-danger me-2">1</span> Sube la Foto de tu Vehículo
+                    </h4>
+                    <p class="text-muted small">Toma una foto de lado (perfil lateral) con buena luz para un montaje perfecto.</p>
+
+                    <div class="zona-subida" onclick="document.getElementById('inputFotoCarro').click()">
+                        <i class="bi bi-cloud-arrow-up-fill text-danger fs-1"></i>
+                        <h5 class="fw-bold mt-2">Haz clic aquí o arrastra tu foto</h5>
+                        <p class="text-muted small mb-0">Formatos compatibles: JPG, PNG, WEBP (Hasta 10MB)</p>
+                        <input type="file" id="inputFotoCarro" accept="image/*" style="display:none;" onchange="procesarFotoSubida(event)">
+                        <input type="file" id="inputCamaraCarro" accept="image/*" capture="environment" style="display:none;" onchange="procesarFotoSubida(event)">
+                    </div>
+                    <div class="mt-2 text-center d-lg-none">
+                        <button type="button" class="btn btn-sm btn-outline-danger w-100 fw-bold py-2 rounded-pill shadow-sm" onclick="document.getElementById('inputCamaraCarro').click()">
+                            <i class="bi bi-camera-fill me-1"></i> 📸 Tomar foto con la cámara de mi celular
+                        </button>
+                    </div>
+                </div>
+
+                <div class="col-lg-6">
+                    <h4 style="font-weight:800; color:var(--rojo-oscuro);">
+                        <i class="bi bi-car-front text-secondary me-2"></i> O Elige un Vehículo de Muestra
+                    </h4>
+                    <p class="text-muted small">Si no tienes una foto a mano, prueba el simulador con uno de estos modelos:</p>
+
+                    <div class="row g-2">
+                        <div class="col-4">
+                            <div class="tarjeta-muestra-vehiculo p-2" onclick="seleccionarVehiculoMuestra('imagenes/auto-deportivo.png', 'Coupé Deportivo Rojo', this)">
+                                <img src="imagenes/auto-deportivo.png" alt="Deportivo">
+                                <div class="fw-bold small mt-1">Deportivo</div>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="tarjeta-muestra-vehiculo p-2 activa" onclick="seleccionarVehiculoMuestra('imagenes/auto-sedan.png', 'Sedán Ejecutivo Plata', this)">
+                                <img src="imagenes/auto-sedan.png" alt="Sedán">
+                                <div class="fw-bold small mt-1">Sedán</div>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="tarjeta-muestra-vehiculo p-2" onclick="seleccionarVehiculoMuestra('imagenes/auto-suv.png', 'Camioneta SUV Negra 4x4', this)">
+                                <img src="imagenes/auto-suv.png" alt="SUV">
+                                <div class="fw-bold small mt-1">SUV 4x4</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-3 p-3 bg-white rounded border">
+                        <small class="text-muted">Vehículo activo para prueba:</small>
+                        <div class="fw-bold text-dark" id="txtVehiculoActivo">Sedán Ejecutivo Plata</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PASO 2: SIMULADOR Y SELECCIÓN DE RINES -->
+            <div class="row g-4">
+                
+                <!-- Columna Izquierda: El Lienzo del Carro -->
+                <div class="col-lg-7">
+                    <h4 style="font-weight:800; color:var(--rojo-oscuro); margin-bottom:15px;">
+                        <span class="badge bg-danger me-2">2</span> Ajuste Visual y Renderizado IA
+                    </h4>
+
+                    <div class="contenedor-lienzo-ia" id="cajaLienzo">
+                        <img id="imgVehiculoBase" src="imagenes/auto-sedan.png" alt="Vehículo">
+
+                        <!-- Rines superpuestos ajustables -->
+                        <img id="rinOverlayDelantero" class="rin-overlay delantero" src="imagenes/rin-titan.png" style="width:18%; left:17%; top:53%;">
+                        <img id="rinOverlayTrasero" class="rin-overlay trasero" src="imagenes/rin-titan.png" style="width:18%; left:68%; top:52%;">
+
+                        <!-- Imagen generada por IA al dar clic en generar -->
+                        <img id="imgGeneradaFinal" src="" alt="Vehículo procesado con IA">
+                    </div>
+
+                    <!-- Controles de Ajuste Manual -->
+                    <div class="bg-white p-3 rounded-bottom border shadow-sm mb-3">
+                        <!-- Selector de rueda individual -->
+                        <div class="d-flex flex-wrap align-items-center justify-content-between mb-3 pb-2 border-bottom gap-2">
+                            <div class="fw-bold small text-dark d-flex align-items-center gap-1">
+                                <i class="bi bi-arrows-move text-danger"></i> Rueda a Mover / Ajustar:
+                            </div>
+                            <div class="btn-group btn-group-sm" role="group" id="grupoSelectorRueda">
+                                <button type="button" class="btn btn-danger active fw-bold" id="btnModoDelantero" onclick="seleccionarRuedaObjetivo('delantero')">
+                                    🚗 Rin Delantero
+                                </button>
+                                <button type="button" class="btn btn-outline-danger fw-bold" id="btnModoTrasero" onclick="seleccionarRuedaObjetivo('trasero')">
+                                    🏎️ Rin Trasero
+                                </button>
+                                <button type="button" class="btn btn-outline-secondary fw-bold" id="btnModoAmbos" onclick="seleccionarRuedaObjetivo('ambos')">
+                                    🔄 Ambos Rines
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="row g-2 align-items-center">
+                            <div class="col-md-6">
+                                <label class="form-label small fw-bold mb-1">
+                                    <i class="bi bi-arrows-angle-expand"></i> Diámetro (<span id="txtRuedaSeleccionadaLabel">Delantero</span>): <span id="txtDiametroRin" class="text-danger">20 Pulgadas</span>
+                                </label>
+                                <input type="range" class="form-range" id="sliderTamanoRin" min="14" max="26" value="18" oninput="cambiarTamanoRines(this.value)">
+                            </div>
+                            <div class="col-md-6 text-md-end">
+                                <div class="d-inline-flex align-items-center gap-1">
+                                    <button class="btn btn-sm btn-outline-secondary" onclick="moverRines(-1, 0)" title="Mover a la izquierda">←</button>
+                                    <button class="btn btn-sm btn-outline-secondary" onclick="moverRines(1, 0)" title="Mover a la derecha">→</button>
+                                    <button class="btn btn-sm btn-outline-secondary" onclick="moverRines(0, -1)" title="Subir">↑</button>
+                                    <button class="btn btn-sm btn-outline-secondary" onclick="moverRines(0, 1)" title="Bajar">↓</button>
+                                    <button class="btn btn-sm btn-outline-danger ms-1" onclick="reajustarPosicionRines()" title="Restablecer posición inicial">Centrar</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="text-muted small mt-2 d-flex align-items-center gap-1" style="font-size:0.78rem;">
+                            <i class="bi bi-info-circle text-primary"></i> 
+                            <span><strong>Tip:</strong> Puedes arrastrar cada rin directamente sobre la imagen con el cursor o el dedo.</span>
+                        </div>
+                    </div>
+
+                    <!-- BOTÓN PRINCIPAL DE GENERACIÓN IA -->
+                    <button class="btn btn-gt-primario w-100 py-3 fs-5 fw-bold" id="btnGenerarRenderIA" onclick="generarImagenIA()">
+                        <i class="bi bi-cpu-fill"></i> 🤖 Generar Imagen Realista con IA
+                    </button>
+
+                    <!-- CAJA DE RECOMENDACIÓN IA -->
+                    <div class="caja-analisis-ia" id="cajaAnalisisIA">
+                        <div class="d-flex align-items-center gap-2 mb-2">
+                            <span class="badge bg-info text-dark fw-bold"><i class="bi bi-stars"></i> IA INSIGHT</span>
+                            <h6 style="margin:0; font-weight:800;" id="tituloAnalisisIA">Análisis de Compatibilidad</h6>
+                        </div>
+                        <p style="margin:0; font-size:0.92rem;" id="textoAnalisisIA">
+                            Selecciona cualquier rin del panel para ver el informe aerodinámico y de estética generado por la Inteligencia Artificial.
+                        </p>
+                    </div>
+
+                    <!-- BOTÓN DE COTIZACIÓN DE ESTE DISEÑO -->
+                    <div class="mt-4" id="cajaBotonCotizarDiseno">
+                        <button class="btn btn-success w-100 py-3 fs-5 fw-bold shadow" onclick="abrirModalCotizarDiseno()">
+                            <i class="bi bi-send-check"></i> 📋 Enviar este Diseño a Cotización
+                        </button>
+                        <p class="text-center text-muted small mt-2">
+                            La imagen generada se adjuntará directamente al administrador para darte precio exacto y disponibilidad.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Columna Derecha: Catálogo de Rines y Llantas Disponibles -->
+                <div class="col-lg-5">
+                    <h4 style="font-weight:800; color:var(--rojo-oscuro); margin-bottom:15px;">
+                        <span class="badge bg-danger me-2">3</span> Elige el Modelo de Rin o Llanta
+                    </h4>
+                    <p class="text-muted small">Selecciona desde la lista desplegable o en las tarjetas interactivas:</p>
+
+                    <!-- SELECTOR / LISTA DESPLEGABLE DE RINES Y LLANTAS -->
+                    <div class="bg-white p-3 rounded border shadow-sm mb-3">
+                        <label class="form-label fw-bold small text-dark d-flex align-items-center justify-content-between mb-2">
+                            <span><i class="bi bi-list-stars text-danger fs-5 me-1"></i> Lista Desplegable de Modelos:</span>
+                            <span class="badge bg-danger" id="badgeTotalModelos">7 disponibles</span>
+                        </label>
+                        <select id="selectModeloVisualizador" class="form-select form-select-lg fw-bold mb-2" style="border: 2px solid var(--rojo-principal); font-size: 0.95rem;" onchange="alCambiarSelectModelo(this.value)">
+                            <optgroup label="🛞 Rines Deportivos y Forjados" id="optgroupRines">
+                                <!-- Llenado dinámico -->
+                            </optgroup>
+                            <optgroup label="🏎️ Llantas de Alto Agarre" id="optgroupLlantas">
+                                <!-- Llenado dinámico -->
+                            </optgroup>
+                        </select>
+                        <div class="d-flex align-items-center gap-1 flex-wrap">
+                            <span class="small text-muted me-1 fw-bold">Filtrar:</span>
+                            <button type="button" class="btn btn-sm btn-dark active fw-bold py-1 px-2" id="filtroTipoTodos" onclick="filtrarTipoVisualizador('todos')">Todos</button>
+                            <button type="button" class="btn btn-sm btn-outline-danger fw-bold py-1 px-2" id="filtroTipoRines" onclick="filtrarTipoVisualizador('rines')">🛞 Rines</button>
+                            <button type="button" class="btn btn-sm btn-outline-secondary fw-bold py-1 px-2" id="filtroTipoLlantas" onclick="filtrarTipoVisualizador('llantas')">🏎️ Llantas</button>
+                        </div>
+                    </div>
+
+                    <div class="row g-3" id="contenedorRinesDisponibles">
+                        <div class="col-12 text-center py-4">
+                            <div class="spinner-border spinner-border-sm text-danger"></div> Cargando modelos...
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </main>
+
+    <!-- MODAL PARA ENVIAR DISEÑO A COTIZACIÓN -->
+    <div class="modal fade" id="modalCotizarDisenoIa" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header bg-dark text-white">
+                    <h5 class="modal-title fw-bold">Enviar Diseño con IA a Cotización</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <div class="row g-4">
+                        <div class="col-md-5 text-center">
+                            <h6 class="fw-bold mb-2">Vista Previa Generada</h6>
+                            <img id="modalVistaPreviaImg" src="" style="width:100%; height:auto; border-radius:10px; border:2px solid var(--rojo-principal);">
+                            <div class="badge bg-dark mt-2" id="modalRinElegidoTxt">Rin Deportivo Titan</div>
+                        </div>
+                        <div class="col-md-7">
+                            <form id="formEnvioCotizacionIA">
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold small">Tu Nombre Completo *</label>
+                                    <input type="text" class="form-control" id="cotIaNombre" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold small">Número de WhatsApp / Teléfono *</label>
+                                    <input type="tel" class="form-control" id="cotIaWhatsapp" placeholder="312 345 6789" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold small">Correo Electrónico (Opcional)</label>
+                                    <input type="email" class="form-control" id="cotIaEmail">
+                                </div>
+                                <div class="mb-4">
+                                    <label class="form-label fw-bold small">Detalles de tu vehículo (Marca / Año / Ciudad)</label>
+                                    <textarea class="form-control" id="cotIaMensaje" rows="2" placeholder="Ej: Mazda 3 modelo 2022 en Sogamoso..."></textarea>
+                                </div>
+                                <button type="submit" class="btn btn-gt-primario w-100 py-2 fw-bold" id="btnEnviarCotIa">
+                                    <i class="bi bi-send-fill"></i> Confirmar y Enviar al Administrador
+                                </button>
+                                <p id="msgFeedbackEnvioIa" class="text-center mt-2 fw-bold small"></p>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CANVAS OCULTO PARA PROCESAMIENTO VISUAL Y SÍNTESIS INTELIGENTE -->
+    <canvas id="canvasComposicion" style="display:none;"></canvas>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        let modelosDisponibles = [];
+        let rinesDisponibles = []; // alias de compatibilidad
+        let filtroTipoActual = 'todos';
+        let rinActual = {
+            id: 1,
+            nombre: 'Rin Deportivo 20" — Modelo Titan',
+            categoria: 'rines',
+            imagen: 'imagenes/rin-titan.png',
+            precio: 1200000
+        };
+        let vehiculoActualSrc = 'imagenes/auto-sedan.png';
+        let vehiculoNombre = 'Sedán Ejecutivo Plata';
+        let modalCotIaBs = null;
+        let imagenGeneradaFinalUrl = '';
+
+        // Posiciones relativas y tamaño individual de cada rin
+        let posDelantera = { left: 17, top: 53, size: 18 };
+        let posTrasera = { left: 68, top: 52, size: 18 };
+        let ruedaObjetivo = 'delantero'; // 'delantero' | 'trasero' | 'ambos'
+
+        document.addEventListener('DOMContentLoaded', async function() {
+            modalCotIaBs = new bootstrap.Modal(document.getElementById('modalCotizarDisenoIa'));
+
+            // Inicializar selección visual de rueda
+            seleccionarRuedaObjetivo('delantero');
+
+            // Habilitar arrastre interactivo individual con mouse y touch
+            inicializarArrastreRines();
+
+            // Actualizar carrito badge
+            actualizarBadgeCarrito();
+
+            // Cargar rines y llantas reales desde el backend
+            await cargarModelosBackend();
+
+            // Verificar si viene con parámetro de rin desde el catálogo
+            const params = new URLSearchParams(window.location.search);
+            const paramRinId = params.get('rin_id');
+            if (paramRinId) {
+                const encontrado = modelosDisponibles.find(r => r.id == paramRinId);
+                if (encontrado) {
+                    seleccionarModelo(encontrado);
+                }
+            }
+
+            // Autocompletar datos del cliente si tiene sesión iniciada
+            if (localStorage.getItem('sesionActivaCliente') === 'true') {
+                document.getElementById('cotIaNombre').value = localStorage.getItem('nombreCliente') || '';
+                document.getElementById('cotIaEmail').value = localStorage.getItem('emailCliente') || '';
+            }
+
+            // Enviar cotización modal evento
+            document.getElementById('formEnvioCotizacionIA').addEventListener('submit', enviarCotizacionIAReal);
+        });
+
+        // Respaldo completo de Rines y Llantas sin fondo (mínimo 2 de cada uno: 5 rines y 2 llantas)
+        const MODELOS_DEFAULT_SIN_FONDO = [
+            // RINES (5 modelos sin fondo PNG)
+            { id: 1, nombre: 'Rin Deportivo 20" — Modelo Titan', categoria: 'rines', precio: 1200000, imagen: 'imagenes/rin-titan.png', desc: 'Bronce titanio multirradio forjado' },
+            { id: 2, nombre: 'Rin Clásico 18" — Elegance Sport', categoria: 'rines', precio: 850000, imagen: 'imagenes/rin-clasico.png', desc: 'Diseño sobrio corte diamante' },
+            { id: 5, nombre: 'Rin Forjado 21" — Dark Spider', categoria: 'rines', precio: 1650000, imagen: 'imagenes/rin-spider.png', desc: 'Aleación aeroespacial ultra ligera' },
+            { id: 6, nombre: 'Rin Deportivo 19" — Hyper Silver', categoria: 'rines', precio: 1350000, imagen: 'imagenes/rin-silver.png', desc: 'Plateado brillante multirradio' },
+            { id: 7, nombre: 'Rin Off-Road 17" — All-Terrain', categoria: 'rines', precio: 1100000, imagen: 'imagenes/rin-terreno.png', desc: 'Acabado reforzado para camionetas' },
+            // LLANTAS (2 modelos sin fondo PNG)
+            { id: 3, nombre: 'Llanta Deportiva Ultra Grip (245/40R19)', categoria: 'llantas', precio: 580000, imagen: 'imagenes/llanta-sport.png', desc: 'Compuesto de sílice para asfalto' },
+            { id: 8, nombre: 'Llanta Todo Terreno All-Terrain 4x4', categoria: 'llantas', precio: 420000, imagen: 'imagenes/llanta-terreno.png', desc: 'Labrado agresivo para trocha y lluvia' }
+        ];
+
+        async function cargarModelosBackend() {
+            try {
+                const res = await fetch('api/productos.php?public=1');
+                const data = await res.json();
+                
+                // Filtrar categorías rines y llantas
+                const delBackend = data.filter(p => p.categoria === 'rines' || p.categoria === 'llantas');
+                
+                if (delBackend.length >= 4) {
+                    modelosDisponibles = delBackend;
+                } else {
+                    modelosDisponibles = MODELOS_DEFAULT_SIN_FONDO;
+                }
+            } catch (e) {
+                modelosDisponibles = MODELOS_DEFAULT_SIN_FONDO;
+            }
+
+            rinesDisponibles = modelosDisponibles;
+            rinActual = modelosDisponibles[0];
+
+            poblarSelectModelos(modelosDisponibles);
+            renderizarListaModelos(modelosDisponibles);
+            actualizarBadgeTotal();
+        }
+
+        // Cargar Rines backend alias
+        async function cargarRinesBackend() {
+            await cargarModelosBackend();
+        }
+
+        // Llenar el <select> desplegable con optgroups
+        function poblarSelectModelos(lista) {
+            const select = document.getElementById('selectModeloVisualizador');
+            if (!select) return;
+
+            select.innerHTML = '';
+
+            const rines = lista.filter(m => m.categoria === 'rines');
+            const llantas = lista.filter(m => m.categoria === 'llantas');
+
+            if (rines.length > 0) {
+                const grpRines = document.createElement('optgroup');
+                grpRines.label = `🛞 Rines Deportivos y Forjados (${rines.length})`;
+                rines.forEach(r => {
+                    const opt = document.createElement('option');
+                    opt.value = r.id;
+                    opt.textContent = `🛞 ${r.nombre} — $${Number(r.precio).toLocaleString('es-CO')}`;
+                    if (r.id === rinActual.id) opt.selected = true;
+                    grpRines.appendChild(opt);
+                });
+                select.appendChild(grpRines);
+            }
+
+            if (llantas.length > 0) {
+                const grpLlantas = document.createElement('optgroup');
+                grpLlantas.label = `🏎️ Llantas de Alto Rendimiento (${llantas.length})`;
+                llantas.forEach(ll => {
+                    const opt = document.createElement('option');
+                    opt.value = ll.id;
+                    opt.textContent = `🏎️ ${ll.nombre} — $${Number(ll.precio).toLocaleString('es-CO')}`;
+                    if (ll.id === rinActual.id) opt.selected = true;
+                    grpLlantas.appendChild(opt);
+                });
+                select.appendChild(grpLlantas);
+            }
+        }
+
+        // Evento al cambiar la lista desplegable
+        function alCambiarSelectModelo(idSeleccionado) {
+            const modelo = modelosDisponibles.find(m => m.id == idSeleccionado);
+            if (modelo) {
+                seleccionarModelo(modelo);
+            }
+        }
+
+        // Filtrar entre Todos / Rines / Llantas
+        function filtrarTipoVisualizador(tipo) {
+            filtroTipoActual = tipo;
+
+            document.getElementById('filtroTipoTodos').className = 'btn btn-sm py-1 px-2 fw-bold ' + (tipo === 'todos' ? 'btn-dark active' : 'btn-outline-dark');
+            document.getElementById('filtroTipoRines').className = 'btn btn-sm py-1 px-2 fw-bold ' + (tipo === 'rines' ? 'btn-danger active' : 'btn-outline-danger');
+            document.getElementById('filtroTipoLlantas').className = 'btn btn-sm py-1 px-2 fw-bold ' + (tipo === 'llantas' ? 'btn-secondary active' : 'btn-outline-secondary');
+
+            let filtrados = modelosDisponibles;
+            if (tipo === 'rines') {
+                filtrados = modelosDisponibles.filter(m => m.categoria === 'rines');
+            } else if (tipo === 'llantas') {
+                filtrados = modelosDisponibles.filter(m => m.categoria === 'llantas');
+            }
+
+            renderizarListaModelos(filtrados);
+            poblarSelectModelos(filtrados);
+            actualizarBadgeTotal(filtrados.length);
+        }
+
+        function actualizarBadgeTotal(cantidad) {
+            const badge = document.getElementById('badgeTotalModelos');
+            if (badge) {
+                const total = cantidad !== undefined ? cantidad : modelosDisponibles.length;
+                badge.textContent = `${total} disponibles`;
+            }
+        }
+
+        function renderizarListaModelos(lista) {
+            const cont = document.getElementById('contenedorRinesDisponibles');
+            if (!cont) return;
+
+            let html = '';
+            lista.forEach((r, idx) => {
+                const activo = (r.id === rinActual.id);
+                const esLlanta = (r.categoria === 'llantas');
+                const icono = esLlanta ? '🏎️' : '🛞';
+                const badgeTipo = esLlanta ? '<span class="badge bg-secondary mb-1">Llanta</span>' : '<span class="badge bg-danger mb-1">Rin</span>';
+
+                html += `
+                <div class="col-6">
+                    <div class="tarjeta-rin-seleccion ${activo ? 'activa' : ''}" onclick="seleccionarModeloPorId(${r.id}, this)">
+                        ${badgeTipo}
+                        <img src="${r.imagen || 'imagenes/rin-titan.png'}" alt="${r.nombre}" onerror="this.src='imagenes/rin-titan.png'">
+                        <div class="fw-bold small text-dark" style="font-size:0.82rem; min-height:36px;">${r.nombre}</div>
+                        <div class="text-danger fw-bold small mt-1">$${Number(r.precio).toLocaleString('es-CO')}</div>
+                    </div>
+                </div>`;
+            });
+            cont.innerHTML = html;
+        }
+
+        function seleccionarModeloPorId(id, elemento) {
+            document.querySelectorAll('.tarjeta-rin-seleccion').forEach(el => el.classList.remove('activa'));
+            if (elemento) elemento.classList.add('activa');
+
+            const modelo = modelosDisponibles.find(m => m.id == id);
+            if (modelo) {
+                seleccionarModelo(modelo);
+            }
+        }
+
+        function seleccionarRinPorIndice(idx, elemento) {
+            if (modelosDisponibles[idx]) {
+                seleccionarModeloPorId(modelosDisponibles[idx].id, elemento);
+            }
+        }
+
+        function seleccionarModelo(modelo) {
+            rinActual = modelo;
+            document.getElementById('rinOverlayDelantero').src = modelo.imagen || 'imagenes/rin-titan.png';
+            document.getElementById('rinOverlayTrasero').src = modelo.imagen || 'imagenes/rin-titan.png';
+
+            // Actualizar valor en el <select> si no coincide
+            const select = document.getElementById('selectModeloVisualizador');
+            if (select && select.value != modelo.id) {
+                select.value = modelo.id;
+            }
+
+            // Ocultar render generado anterior para obligar a volver a generar
+            document.getElementById('imgGeneradaFinal').style.display = 'none';
+            document.getElementById('imgVehiculoBase').style.display = 'block';
+            document.getElementById('rinOverlayDelantero').style.display = 'block';
+            document.getElementById('rinOverlayTrasero').style.display = 'block';
+
+            // Actualizar análisis de la IA
+            actualizarAnalisisIA(modelo.nombre);
+
+            // Tito explica la elección
+            if (window.gtpDecir) {
+                const tipoTxt = (modelo.categoria === 'llantas') ? 'la llanta' : 'el rin';
+                window.gtpDecir('Tito el Mecánico 👨‍🔧', `<strong>¡Excelente elección!</strong> Montaste ${tipoTxt} <strong>${modelo.nombre}</strong>. Puedes calibrar su tamaño con el control deslizante o moverlo en el lienzo.`);
+            }
+        }
+
+        function seleccionarRin(rin) {
+            seleccionarModelo(rin);
+        }
+
+        function seleccionarVehiculoMuestra(src, nombre, el) {
+            document.querySelectorAll('.tarjeta-muestra-vehiculo').forEach(t => t.classList.remove('activa'));
+            if (el) el.classList.add('activa');
+
+            vehiculoActualSrc = src;
+            vehiculoNombre = nombre;
+            document.getElementById('txtVehiculoActivo').textContent = nombre;
+
+            const imgBase = document.getElementById('imgVehiculoBase');
+            imgBase.src = src;
+
+            // Restablecer posiciones según tipo de vehículo
+            if (src.includes('suv')) {
+                posDelantera = { left: 17, top: 44, size: 20 };
+                posTrasera = { left: 66, top: 43, size: 20 };
+            } else if (src.includes('deportivo')) {
+                posDelantera = { left: 16, top: 49, size: 17 };
+                posTrasera = { left: 69, top: 47, size: 17 };
+            } else {
+                posDelantera = { left: 17, top: 53, size: 18 };
+                posTrasera = { left: 68, top: 52, size: 18 };
+            }
+
+            const currentSize = (ruedaObjetivo === 'trasero') ? posTrasera.size : posDelantera.size;
+            document.getElementById('sliderTamanoRin').value = currentSize;
+            document.getElementById('txtDiametroRin').textContent = (currentSize + 2) + ' Pulgadas';
+
+            aplicarPosicionesRines();
+
+            document.getElementById('imgGeneradaFinal').style.display = 'none';
+            document.getElementById('imgVehiculoBase').style.display = 'block';
+            document.getElementById('rinOverlayDelantero').style.display = 'block';
+            document.getElementById('rinOverlayTrasero').style.display = 'block';
+        }
+
+        function procesarFotoSubida(event) {
+            const archivo = event.target.files[0];
+            if (!archivo) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                vehiculoActualSrc = e.target.result;
+                vehiculoNombre = 'Mi Vehículo (' + archivo.name + ')';
+                document.getElementById('txtVehiculoActivo').textContent = vehiculoNombre;
+
+                const imgBase = document.getElementById('imgVehiculoBase');
+                imgBase.src = vehiculoActualSrc;
+
+                document.getElementById('imgGeneradaFinal').style.display = 'none';
+                document.getElementById('imgVehiculoBase').style.display = 'block';
+                document.getElementById('rinOverlayDelantero').style.display = 'block';
+                document.getElementById('rinOverlayTrasero').style.display = 'block';
+
+                document.getElementById('cajaLienzo').scrollIntoView({ behavior: 'smooth' });
+            };
+            reader.readAsDataURL(archivo);
+        }
+
+        function seleccionarRuedaObjetivo(modo) {
+            ruedaObjetivo = modo;
+            const btnDel = document.getElementById('btnModoDelantero');
+            const btnTra = document.getElementById('btnModoTrasero');
+            const btnAmb = document.getElementById('btnModoAmbos');
+            const lbl = document.getElementById('txtRuedaSeleccionadaLabel');
+            const slider = document.getElementById('sliderTamanoRin');
+
+            btnDel.className = 'btn fw-bold ' + (modo === 'delantero' ? 'btn-danger active' : 'btn-outline-danger');
+            btnTra.className = 'btn fw-bold ' + (modo === 'trasero' ? 'btn-danger active' : 'btn-outline-danger');
+            btnAmb.className = 'btn fw-bold ' + (modo === 'ambos' ? 'btn-danger active' : 'btn-outline-secondary');
+
+            if (modo === 'delantero') {
+                lbl.textContent = 'Delantero';
+                slider.value = posDelantera.size;
+                document.getElementById('txtDiametroRin').textContent = (posDelantera.size + 2) + ' Pulgadas';
+            } else if (modo === 'trasero') {
+                lbl.textContent = 'Trasero';
+                slider.value = posTrasera.size;
+                document.getElementById('txtDiametroRin').textContent = (posTrasera.size + 2) + ' Pulgadas';
+            } else {
+                lbl.textContent = 'Ambos';
+                slider.value = posDelantera.size;
+                document.getElementById('txtDiametroRin').textContent = (posDelantera.size + 2) + ' Pulgadas';
+            }
+
+            aplicarPosicionesRines();
+        }
+
+        function cambiarTamanoRines(val) {
+            const tamano = parseInt(val);
+            if (ruedaObjetivo === 'delantero') {
+                posDelantera.size = tamano;
+            } else if (ruedaObjetivo === 'trasero') {
+                posTrasera.size = tamano;
+            } else {
+                posDelantera.size = tamano;
+                posTrasera.size = tamano;
+            }
+            document.getElementById('txtDiametroRin').textContent = (tamano + 2) + ' Pulgadas';
+            aplicarPosicionesRines();
+        }
+
+        function moverRines(dx, dy) {
+            if (ruedaObjetivo === 'delantero') {
+                posDelantera.left += dx;
+                posDelantera.top += dy;
+            } else if (ruedaObjetivo === 'trasero') {
+                posTrasera.left += dx;
+                posTrasera.top += dy;
+            } else {
+                posDelantera.left += dx;
+                posDelantera.top += dy;
+                posTrasera.left += dx;
+                posTrasera.top += dy;
+            }
+            aplicarPosicionesRines();
+        }
+
+        function reajustarPosicionRines() {
+            if (ruedaObjetivo === 'delantero') {
+                posDelantera = { left: 17, top: 53, size: 18 };
+            } else if (ruedaObjetivo === 'trasero') {
+                posTrasera = { left: 68, top: 52, size: 18 };
+            } else {
+                posDelantera = { left: 17, top: 53, size: 18 };
+                posTrasera = { left: 68, top: 52, size: 18 };
+            }
+            document.getElementById('sliderTamanoRin').value = 18;
+            document.getElementById('txtDiametroRin').textContent = '20 Pulgadas';
+            aplicarPosicionesRines();
+        }
+
+        function aplicarPosicionesRines() {
+            const rinD = document.getElementById('rinOverlayDelantero');
+            const rinT = document.getElementById('rinOverlayTrasero');
+
+            rinD.style.width = posDelantera.size + '%';
+            rinD.style.left = posDelantera.left + '%';
+            rinD.style.top = posDelantera.top + '%';
+
+            rinT.style.width = posTrasera.size + '%';
+            rinT.style.left = posTrasera.left + '%';
+            rinT.style.top = posTrasera.top + '%';
+
+            // Destacar cuál rin se está editando activamente
+            if (ruedaObjetivo === 'delantero') {
+                rinD.classList.add('seleccionado');
+                rinT.classList.remove('seleccionado');
+            } else if (ruedaObjetivo === 'trasero') {
+                rinT.classList.add('seleccionado');
+                rinD.classList.remove('seleccionado');
+            } else {
+                rinD.classList.add('seleccionado');
+                rinT.classList.add('seleccionado');
+            }
+        }
+
+        // ========== ARRASTRE INTERACTIVO DIRECTO (DRAG & DROP INDIVIDUAL) ==========
+        function inicializarArrastreRines() {
+            const rinD = document.getElementById('rinOverlayDelantero');
+            const rinT = document.getElementById('rinOverlayTrasero');
+            const caja = document.getElementById('cajaLienzo');
+
+            configurarArrastreElemento(rinD, 'delantero');
+            configurarArrastreElemento(rinT, 'trasero');
+
+            function configurarArrastreElemento(elem, tipo) {
+                let arrastrando = false;
+                let startX, startY;
+                let startPosLeft, startPosTop;
+
+                // Eventos Mouse
+                elem.addEventListener('mousedown', function(e) {
+                    e.preventDefault();
+                    arrastrando = true;
+                    seleccionarRuedaObjetivo(tipo);
+                    startX = e.clientX;
+                    startY = e.clientY;
+                    startPosLeft = (tipo === 'delantero') ? posDelantera.left : posTrasera.left;
+                    startPosTop = (tipo === 'delantero') ? posDelantera.top : posTrasera.top;
+
+                    document.addEventListener('mousemove', onMouseMove);
+                    document.addEventListener('mouseup', onMouseUp);
+                });
+
+                function onMouseMove(e) {
+                    if (!arrastrando) return;
+                    const rect = caja.getBoundingClientRect();
+                    const deltaX = ((e.clientX - startX) / rect.width) * 100;
+                    const deltaY = ((e.clientY - startY) / rect.height) * 100;
+
+                    if (tipo === 'delantero') {
+                        posDelantera.left = Math.round((startPosLeft + deltaX) * 10) / 10;
+                        posDelantera.top = Math.round((startPosTop + deltaY) * 10) / 10;
+                    } else {
+                        posTrasera.left = Math.round((startPosLeft + deltaX) * 10) / 10;
+                        posTrasera.top = Math.round((startPosTop + deltaY) * 10) / 10;
+                    }
+                    aplicarPosicionesRines();
+                }
+
+                function onMouseUp() {
+                    arrastrando = false;
+                    document.removeEventListener('mousemove', onMouseMove);
+                    document.removeEventListener('mouseup', onMouseUp);
+                }
+
+                // Eventos Touch (móviles y tablets)
+                elem.addEventListener('touchstart', function(e) {
+                    if (e.touches.length !== 1) return;
+                    arrastrando = true;
+                    seleccionarRuedaObjetivo(tipo);
+                    const touch = e.touches[0];
+                    startX = touch.clientX;
+                    startY = touch.clientY;
+                    startPosLeft = (tipo === 'delantero') ? posDelantera.left : posTrasera.left;
+                    startPosTop = (tipo === 'delantero') ? posDelantera.top : posTrasera.top;
+                }, { passive: true });
+
+                elem.addEventListener('touchmove', function(e) {
+                    if (!arrastrando || e.touches.length !== 1) return;
+                    const touch = e.touches[0];
+                    const rect = caja.getBoundingClientRect();
+                    const deltaX = ((touch.clientX - startX) / rect.width) * 100;
+                    const deltaY = ((touch.clientY - startY) / rect.height) * 100;
+
+                    if (tipo === 'delantero') {
+                        posDelantera.left = Math.round((startPosLeft + deltaX) * 10) / 10;
+                        posDelantera.top = Math.round((startPosTop + deltaY) * 10) / 10;
+                    } else {
+                        posTrasera.left = Math.round((startPosLeft + deltaX) * 10) / 10;
+                        posTrasera.top = Math.round((startPosTop + deltaY) * 10) / 10;
+                    }
+                    aplicarPosicionesRines();
+                }, { passive: true });
+
+                elem.addEventListener('touchend', function() {
+                    arrastrando = false;
+                });
+            }
+        }
+
+        function actualizarAnalisisIA(nombreRin) {
+            const titulo = document.getElementById('tituloAnalisisIA');
+            const texto = document.getElementById('textoAnalisisIA');
+
+            const esLlanta = (rinActual && rinActual.categoria === 'llantas') || nombreRin.toLowerCase().includes('llanta');
+
+            if (esLlanta) {
+                titulo.textContent = 'Compatibilidad y Rendimiento: ' + nombreRin;
+                texto.innerHTML = `
+                    ✨ <strong>Recomendación del Algoritmo Automotriz:</strong> Labrado de alto drenaje con compuesto de sílice avanzado. Proporciona tracción superior en curva y reduce las distancias de frenado en mojado un 22%.<br>
+                    💡 Haz clic en <strong>"Generar Imagen Realista con IA"</strong> para procesar sombras de profundidad y textura en el paso de rueda.
+                `;
+            } else {
+                titulo.textContent = 'Compatibilidad y Estética: ' + nombreRin;
+                texto.innerHTML = `
+                    ✨ <strong>Recomendación del Algoritmo Automotriz:</strong> El perfil y offset ET de este rin garantizan un paso de rueda despejado, excelente ventilación del sistema de frenado y una reducción notable en la inercia rotacional.<br>
+                    💡 Haz clic en <strong>"Generar Imagen Realista con IA"</strong> para procesar sombras de profundidad y alineación de caliper.
+                `;
+            }
+        }
+
+        // ========== MOTOR DE GENERACIÓN IA REALISTA (CANVAS + API) ==========
+        async function generarImagenIA() {
+            const btn = document.getElementById('btnGenerarRenderIA');
+            btn.disabled = true;
+            btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>🤖 Procesando síntesis visual y sombras con IA...';
+
+            const canvas = document.getElementById('canvasComposicion');
+            const ctx = canvas.getContext('2d');
+
+            const imgCarro = new Image();
+            imgCarro.crossOrigin = 'anonymous';
+            imgCarro.src = vehiculoActualSrc;
+
+            imgCarro.onload = async function() {
+                canvas.width = imgCarro.naturalWidth || 1200;
+                canvas.height = imgCarro.naturalHeight || 675;
+
+                // 1. Dibujar carrocería del vehículo
+                ctx.drawImage(imgCarro, 0, 0, canvas.width, canvas.height);
+
+                // 2. Cargar imagen del rin para síntesis
+                const imgRin = new Image();
+                imgRin.crossOrigin = 'anonymous';
+                imgRin.src = rinActual.imagen || 'imagenes/rin-titan.png';
+
+                imgRin.onload = async function() {
+                    // Calcular dimensiones y coordenadas individuales de cada rin en el canvas
+                    const wDel = canvas.width * (posDelantera.size / 100);
+                    const hDel = wDel;
+                    const xDel = canvas.width * (posDelantera.left / 100);
+                    const yDel = canvas.height * (posDelantera.top / 100);
+
+                    const wTra = canvas.width * (posTrasera.size / 100);
+                    const hTra = wTra;
+                    const xTra = canvas.width * (posTrasera.left / 100);
+                    const yTra = canvas.height * (posTrasera.top / 100);
+
+                    // Función para pintar rin con sombra y acabado
+                    function pintarRinSintetizado(x, y, w, h) {
+                        ctx.save();
+                        // Sombra de contacto
+                        ctx.shadowColor = 'rgba(0,0,0,0.7)';
+                        ctx.shadowBlur = 18;
+                        ctx.shadowOffsetX = 0;
+                        ctx.shadowOffsetY = 6;
+                        ctx.drawImage(imgRin, x, y, w, h);
+                        ctx.restore();
+                    }
+
+                    pintarRinSintetizado(xDel, yDel, wDel, hDel);
+                    pintarRinSintetizado(xTra, yTra, wTra, hTra);
+
+                    // Marca de agua sutil IA
+                    ctx.font = "bold 16px Montserrat, sans-serif";
+                    ctx.fillStyle = "rgba(255,255,255,0.8)";
+                    ctx.fillText("GT PRO IA VISUALIZER", 25, canvas.height - 25);
+
+                    const dataUrl = canvas.toDataURL('image/png');
+                    imagenGeneradaFinalUrl = dataUrl;
+
+                    // Enviar al backend para guardar y procesar recomendación
+                    try {
+                        const res = await fetch('api/generar_imagen.php', {
+                            method: 'POST',
+                            headers: {'Content-Type': 'application/json'},
+                            body: JSON.stringify({
+                                foto_carro: dataUrl,
+                                rin_nombre: rinActual.nombre,
+                                rin_id: rinActual.id,
+                                tamano: posDelantera.size
+                            })
+                        });
+                        const data = await res.json();
+                        if (data.exito) {
+                            if (data.imagen_generada && data.imagen_generada.startsWith('imagenes/')) {
+                                imagenGeneradaFinalUrl = data.imagen_generada;
+                            }
+                            if (data.recomendacion) {
+                                document.getElementById('textoAnalisisIA').innerHTML = data.recomendacion;
+                            }
+                        }
+                    } catch (err) {}
+
+                    // Mostrar resultado final sobre el lienzo
+                    const imgFinal = document.getElementById('imgGeneradaFinal');
+                    imgFinal.src = imagenGeneradaFinalUrl;
+                    imgFinal.style.display = 'block';
+
+                    document.getElementById('imgVehiculoBase').style.display = 'none';
+                    document.getElementById('rinOverlayDelantero').style.display = 'none';
+                    document.getElementById('rinOverlayTrasero').style.display = 'none';
+
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="bi bi-check-circle-fill text-success"></i> ✨ ¡Imagen Generada con IA! (Volver a generar)';
+                };
+            };
+        }
+
+        // ========== ENVIAR DISEÑO A COTIZACIÓN ==========
+        function abrirModalCotizarDiseno() {
+            if (!imagenGeneradaFinalUrl) {
+                // Si aún no ha presionado generar, generar automáticamente antes de abrir modal
+                generarImagenIA().then(() => {
+                    setTimeout(() => abrirModalCotizarDiseno(), 1500);
+                });
+                return;
+            }
+
+            document.getElementById('modalVistaPreviaImg').src = imagenGeneradaFinalUrl;
+            document.getElementById('modalRinElegidoTxt').textContent = rinActual.nombre;
+            modalCotIaBs.show();
+        }
+
+        async function enviarCotizacionIAReal(e) {
+            e.preventDefault();
+            const btn = document.getElementById('btnEnviarCotIa');
+            const msg = document.getElementById('msgFeedbackEnvioIa');
+            btn.disabled = true;
+            btn.textContent = 'Enviando al administrador...';
+
+            const payload = {
+                accion: 'cotizar',
+                nombre_rin: rinActual.nombre,
+                imagen_resultado: imagenGeneradaFinalUrl,
+                tamano_pulgadas: posDelantera.size - 3,
+                whatsapp: document.getElementById('cotIaWhatsapp').value.trim(),
+                nombre: document.getElementById('cotIaNombre').value.trim(),
+                email: document.getElementById('cotIaEmail').value.trim(),
+                mensaje: document.getElementById('cotIaMensaje').value.trim(),
+                cliente_id: localStorage.getItem('clienteId') || null
+            };
+
+            try {
+                const res = await fetch('api/disenos.php', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(payload)
+                });
+                const data = await res.json();
+
+                if (data.exito) {
+                    msg.textContent = '✅ ' + data.mensaje;
+                    msg.style.color = 'green';
+                    alert('🎉 ' + data.mensaje);
+
+                    // Opción de enviar también a WhatsApp
+                    const wspLimpio = payload.whatsapp.replace(/[^0-9]/g, '');
+                    const textoWsp = encodeURIComponent(`Hola GT Pro! Acabo de enviar una cotización desde el Visualizador Virtual para mi vehículo con el modelo: ${rinActual.nombre}.`);
+                    window.open(`https://wa.me/573225817510?text=${textoWsp}`, '_blank');
+
+                    modalCotIaBs.hide();
+                } else {
+                    msg.textContent = '⚠️ ' + data.mensaje;
+                    msg.style.color = '#dc3545';
+                    alert(data.mensaje);
+                }
+            } catch (err) {
+                msg.textContent = 'Error de conexión con el servidor.';
+                msg.style.color = '#dc3545';
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="bi bi-send-fill"></i> Confirmar y Enviar al Administrador';
+            }
+        }
+
+        function actualizarBadgeCarrito() {
+            const carrito = JSON.parse(localStorage.getItem('carrito') || '[]');
+            const cant = carrito.reduce((sum, item) => sum + (parseInt(item.cantidad) || 1), 0);
+            const badge = document.getElementById('badgeNavCarritoVis');
+            if (badge) badge.textContent = cant;
+
+            // Sesión
+            const btnSes = document.getElementById('btnSesionVis');
+            if (btnSes) {
+                if (localStorage.getItem('sesionActivaCliente') === 'true') {
+                    btnSes.href = 'panel-cliente.html';
+                    btnSes.innerHTML = `<i class="bi bi-person-circle"></i> ${localStorage.getItem('nombreCliente') || 'Mi Cuenta'}`;
+                } else {
+                    btnSes.href = 'login.html';
+                    btnSes.innerHTML = `<i class="bi bi-box-arrow-in-right"></i> Ingresar`;
+                }
+            }
+        }
+    </script>
+    <script src="js/tutorial-avatar.js?v=3.0"></script>
+    <script src="js/movil-pwa.js?v=3.0"></script>
+</body>
+</html>

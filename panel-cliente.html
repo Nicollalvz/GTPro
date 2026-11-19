@@ -1,0 +1,821 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <script>
+        // Protección inmediata: si no ha iniciado sesión, redirige directo a login sin alertas y sin mostrar el panel
+        if (localStorage.getItem('sesionActivaCliente') !== 'true') {
+            window.location.replace('login.html?destino=panel-cliente.html');
+        }
+    </script>
+    <style id="authBlockerStyle">
+        body { display: none !important; }
+    </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Mi Panel de Cliente — Rines y Llantas GT Pro</title>
+    
+    <link rel="icon" type="image/png" href="imagenes/favicon.png">
+    <link rel="apple-touch-icon" href="imagenes/app-icon-192.png">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#8C1F1F">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Rines GT Pro">
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="css/estilos.css?v=3.0">
+    <link rel="stylesheet" href="css/tutorial-avatar.css?v=3.0">
+    
+    <style>
+        :root {
+            --rojo-principal: #8C1F1F;
+            --rojo-oscuro: #4A0F0F;
+        }
+        body { 
+            background: #f8f9fa; 
+            min-height: 100vh;
+            font-family: 'Montserrat', sans-serif;
+        }
+        .banner-perfil {
+            background: linear-gradient(135deg, #1a1a1a 0%, #2c2c2c 100%);
+            color: white;
+            padding: 40px 0 70px;
+            border-bottom: 3px solid var(--rojo-principal);
+        }
+        .contenedor-flotante {
+            margin-top: -45px;
+            margin-bottom: 50px;
+        }
+        .tarjeta-cliente-resumen {
+            background: white;
+            border-radius: 16px;
+            padding: 25px 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            border: 1px solid #eee;
+        }
+        .nav-tabs-cliente {
+            border-bottom: 2px solid #e9ecef;
+            gap: 8px;
+        }
+        .nav-tabs-cliente .nav-link {
+            color: #555 !important;
+            font-weight: 700;
+            border: none;
+            padding: 14px 22px;
+            border-radius: 10px 10px 0 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s;
+        }
+        .nav-tabs-cliente .nav-link:hover {
+            color: var(--rojo-principal) !important;
+            background: #f1f3f5;
+        }
+        .nav-tabs-cliente .nav-link.active {
+            color: white !important;
+            background: var(--rojo-principal) !important;
+        }
+        .caja-tab {
+            background: white;
+            border-radius: 0 0 16px 16px;
+            padding: 35px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.06);
+            border: 1px solid #eee;
+            border-top: none;
+            min-height: 450px;
+        }
+        .tarjeta-stat {
+            background: #fafafa;
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid #eee;
+            text-align: center;
+            transition: transform 0.2s;
+        }
+        .tarjeta-stat:hover {
+            transform: translateY(-3px);
+            border-color: var(--rojo-principal);
+        }
+        .tarjeta-stat .num {
+            font-size: 2rem;
+            font-weight: 900;
+            color: var(--rojo-principal);
+        }
+        .galeria-disenos {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 24px;
+        }
+        .tarjeta-diseno {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+            border: 1px solid #eee;
+            transition: transform 0.25s;
+        }
+        .tarjeta-diseno:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 25px rgba(140,31,31,0.15);
+        }
+        .tarjeta-diseno img {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+        }
+
+        /* Factura imprimible */
+        @media print {
+            body * { visibility: hidden; }
+            #areaFacturaClienteImprimible, #areaFacturaClienteImprimible * { visibility: visible; }
+            #areaFacturaClienteImprimible { position: absolute; left: 0; top: 0; width: 100%; }
+            .no-imprimir { display: none !important; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- BARRA DE NAVEGACIÓN -->
+    <nav class="navbar navbar-expand-lg fixed-top">
+        <div class="container">
+            <a class="navbar-brand d-flex align-items-center gap-2" href="panel-cliente.html">
+                <img src="imagenes/logo-gt-pro.png" alt="Rines y Llantas GT Pro" class="logo-navbar">
+                <span class="logo-texto d-none d-sm-inline">RINES & LLANTAS GT <span>PRO</span></span>
+            </a>
+            <button class="navbar-toggler text-white" type="button" data-bs-toggle="collapse" data-bs-target="#navCliente">
+                <span class="navbar-toggler-icon" style="filter:invert(1);"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navCliente">
+                <ul class="navbar-nav ms-auto align-items-center">
+                    <li class="nav-item"><a class="nav-link active" href="panel-cliente.html"><i class="bi bi-house-door me-1"></i>Inicio</a></li>
+                    <li class="nav-item"><a class="nav-link" href="catalogo.html">Catálogo</a></li>
+                    <li class="nav-item"><a class="nav-link" href="visualizador.html"><i class="bi bi-car-front-fill me-1"></i> Visualizador Virtual</a></li>
+                    <li class="nav-item ms-lg-2">
+                        <a class="nav-link position-relative px-3" href="carrito.html" title="Mi Carrito de Compras">
+                            <i class="bi bi-cart3 fs-5"></i>
+                            <span class="badge bg-danger rounded-pill position-absolute top-0 start-100 translate-middle" id="badgeContadorCarrito">0</span>
+                        </a>
+                    </li>
+                    <li class="nav-item ms-lg-3">
+                        <button class="btn btn-outline-light btn-sm" onclick="cerrarSesionCliente()">
+                            <i class="bi bi-box-arrow-right"></i> Salir
+                        </button>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- BANNER DE BIENVENIDA -->
+    <section class="banner-perfil">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <span class="badge bg-danger px-3 py-2 mb-2 fw-bold">PANEL DEL CLIENTE</span>
+                    <h1 style="font-weight:900;" class="mb-1">¡Hola, <span id="saludoNombreCliente">Cliente</span>! 👋</h1>
+                    <p style="color:#ccc; font-size:1.05rem;" class="mb-0">Gestiona tu información personal, consulta tus cotizaciones, descarga tus facturas y revisa tus montajes virtuales.</p>
+                </div>
+                <div class="col-md-4 text-md-end mt-3 mt-md-0">
+                    <a href="visualizador.html" class="btn btn-gt-primario me-2">
+                        <i class="bi bi-car-front-fill me-1"></i> Visualizador Virtual
+                    </a>
+                    <a href="catalogo.html" class="btn btn-outline-light">
+                        <i class="bi bi-shop"></i> Tienda
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CONTENEDOR PRINCIPAL FLOTANTE -->
+    <div class="container contenedor-flotante">
+        <!-- TARJETAS DE RESUMEN RÁPIDO -->
+        <div class="tarjeta-cliente-resumen mb-4">
+            <div class="row g-3">
+                <div class="col-md-3">
+                    <div class="tarjeta-stat">
+                        <div class="num" id="statCompras">0</div>
+                        <div class="text-muted fw-bold small">Compras Realizadas</div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="tarjeta-stat">
+                        <div class="num" id="statCotizaciones">0</div>
+                        <div class="text-muted fw-bold small">Cotizaciones Solicitadas</div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="tarjeta-stat">
+                        <div class="num" id="statDisenos">0</div>
+                        <div class="text-muted fw-bold small">Diseños IA Guardados</div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="tarjeta-stat" onclick="window.location.href='carrito.html'" style="cursor:pointer;" title="Clic para ir al Carrito y finalizar tu compra o apartado">
+                        <div class="num text-danger" id="statCarrito">0</div>
+                        <div class="text-muted fw-bold small"><i class="bi bi-cart3 text-danger"></i> Items en Carrito (Comprar)</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- PESTAÑAS DEL PANEL -->
+        <ul class="nav nav-tabs nav-tabs-cliente" id="tabsCliente" role="tablist">
+            <li class="nav-item">
+                <button class="nav-link active" id="tab-perfil-btn" data-bs-toggle="tab" data-bs-target="#tab-perfil" type="button">
+                    <i class="bi bi-person-circle"></i> Mi Perfil Personal
+                </button>
+            </li>
+            <li class="nav-item">
+                <button class="nav-link" id="tab-cotizaciones-btn" data-bs-toggle="tab" data-bs-target="#tab-cotizaciones" type="button">
+                    <i class="bi bi-file-earmark-text"></i> Mis Cotizaciones
+                </button>
+            </li>
+            <li class="nav-item">
+                <button class="nav-link" id="tab-compras-btn" data-bs-toggle="tab" data-bs-target="#tab-compras" type="button">
+                    <i class="bi bi-receipt"></i> Mis Compras y Facturas
+                </button>
+            </li>
+            <li class="nav-item">
+                <button class="nav-link" id="tab-disenos-btn" data-bs-toggle="tab" data-bs-target="#tab-disenos" type="button">
+                    <i class="bi bi-car-front-fill me-1"></i> Mis Diseños Virtuales
+                </button>
+            </li>
+        </ul>
+
+        <!-- CONTENIDO DE LAS PESTAÑAS -->
+        <div class="tab-content">
+
+            <!-- TAB 1: PERFIL PERSONAL -->
+            <div class="tab-pane fade show active caja-tab" id="tab-perfil">
+                <h3 style="font-weight:800; color:var(--rojo-oscuro); margin-bottom:10px;">👤 Datos de Mi Perfil</h3>
+                <p style="color:#666; margin-bottom:30px;">Actualiza tus datos de contacto y dirección para que tus facturas y envíos se generen correctamente.</p>
+
+                <form id="formEditarPerfilCliente" style="max-width:700px;">
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Nombre Completo *</label>
+                            <input type="text" class="form-control" id="perfilNombre" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Correo Electrónico *</label>
+                            <input type="email" class="form-control" id="perfilEmail" required>
+                        </div>
+                    </div>
+
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Teléfono / WhatsApp *</label>
+                            <input type="text" class="form-control" id="perfilTelefono" placeholder="322 581 7510">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Ciudad</label>
+                            <input type="text" class="form-control" id="perfilCiudad" placeholder="Sogamoso, Duitama, Tunja...">
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Dirección de Entrega / Residencia</label>
+                        <input type="text" class="form-control" id="perfilDireccion" placeholder="Calle 15 # 12-45 Barrio Centro">
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label fw-bold">Cambiar Contraseña <small class="text-muted fw-normal">(Dejar en blanco si no deseas cambiarla)</small></label>
+                        <input type="password" class="form-control" id="perfilClave" placeholder="Mínimo 6 caracteres">
+                    </div>
+
+                    <button type="submit" class="btn btn-gt-primario" id="btnGuardarPerfil">
+                        <i class="bi bi-check-circle"></i> Guardar Cambios
+                    </button>
+                    <span id="mensajePerfilFeedback" class="ms-3 fw-bold"></span>
+                </form>
+            </div>
+
+            <!-- TAB 2: MIS COTIZACIONES -->
+            <div class="tab-pane fade caja-tab" id="tab-cotizaciones">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <div>
+                        <h3 style="font-weight:800; color:var(--rojo-oscuro); margin:0;">📋 Mis Solicitudes de Cotización</h3>
+                        <p style="color:#666; margin:0;">Consulta el estado en tiempo real de tus cotizaciones solicitadas.</p>
+                    </div>
+                    <a href="catalogo.html" class="btn btn-sm btn-outline-danger fw-bold">
+                        <i class="bi bi-plus-circle"></i> Nueva Cotización
+                    </a>
+                </div>
+
+                <div id="contenedorMisCotizaciones">
+                    <p class="text-center py-4 text-muted">Cargando cotizaciones...</p>
+                </div>
+            </div>
+
+            <!-- TAB 3: MIS COMPRAS Y FACTURAS -->
+            <div class="tab-pane fade caja-tab" id="tab-compras">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <div>
+                        <h3 style="font-weight:800; color:var(--rojo-oscuro); margin:0;">🧾 Mis Compras y Facturas</h3>
+                        <p style="color:#666; margin:0;">Revisa tu historial de compras y descarga o imprime tus comprobantes de venta oficiales.</p>
+                    </div>
+                </div>
+
+                <div id="contenedorMisCompras">
+                    <p class="text-center py-4 text-muted">Cargando historial de compras...</p>
+                </div>
+            </div>
+
+            <!-- TAB 4: MIS DISEÑOS CON IA -->
+            <div class="tab-pane fade caja-tab" id="tab-disenos">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <div>
+                        <h3 style="font-weight:800; color:var(--rojo-oscuro); margin:0;">🤖 Mis Diseños Personalizados con IA</h3>
+                        <p style="color:#666; margin:0;">Los vehículos que probaste en el Visualizador Virtual con diferentes tipos de rines.</p>
+                    </div>
+                    <a href="visualizador.html" class="btn btn-sm btn-gt-primario">
+                        <i class="bi bi-magic"></i> Probar Nuevo Rin en mi Carro
+                    </a>
+                </div>
+
+                <div id="contenedorMisDisenos" class="galeria-disenos">
+                    <p class="text-center py-4 text-muted">Cargando tus creaciones con IA...</p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- MODAL DE VISUALIZACIÓN / IMPRESIÓN DE FACTURA -->
+    <div class="modal fade" id="modalFacturaCliente" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header bg-dark text-white no-imprimir">
+                    <h5 class="modal-title fw-bold">Factura de Compra Oficial</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-4" id="areaFacturaClienteImprimible">
+                    <div style="background:white; padding:30px; border:1px solid #ddd; border-radius:8px;">
+                        <div class="d-flex justify-content-between border-bottom pb-3 mb-3">
+                            <div>
+                                <h3 style="font-weight:900; color:var(--rojo-principal); margin:0;">RINES & LLANTAS GT PRO</h3>
+                                <p style="margin:2px 0; color:#666; font-size:0.88rem;">NIT: 901.458.712-4 — Régimen Común</p>
+                                <p style="margin:2px 0; color:#666; font-size:0.88rem;">Carrera 11 # 18-30, Sogamoso, Boyacá</p>
+                                <p style="margin:2px 0; color:#666; font-size:0.88rem;">Tel:322 581 7510 — WhatsApp: +57 322 581 7510</p>
+                            </div>
+                            <div class="text-end">
+                                <div style="font-size:1.3rem; font-weight:900;" id="cliFacNum">FAC-0000</div>
+                                <div class="text-muted small" id="cliFacFecha"></div>
+                                <span class="badge bg-success mt-2">PAGO EXITOSO</span>
+                            </div>
+                        </div>
+
+                        <div class="p-3 mb-3" style="background:#f9f9f9; border-radius:8px;">
+                            <strong>Cliente:</strong> <span id="cliFacNombre"></span><br>
+                            <strong>Teléfono:</strong> <span id="cliFacTel"></span> | <strong>Dirección:</strong> <span id="cliFacDir"></span><br>
+                            <strong>Método de Pago:</strong> <span id="cliFacMetodo"></span>
+                        </div>
+
+                        <table class="table table-bordered mb-3">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Producto</th>
+                                    <th class="text-center">Cant.</th>
+                                    <th class="text-end">Precio Unit.</th>
+                                    <th class="text-end">Subtotal</th>
+                                </tr>
+                            </thead>
+                            <tbody id="cliFacTbody"></tbody>
+                            <tfoot>
+                                <tr>
+                                    <td colspan="3" class="text-end fw-bold">Subtotal:</td>
+                                    <td class="text-end fw-bold" id="cliFacSub">$0</td>
+                                </tr>
+                                <tr>
+                                    <td colspan="3" class="text-end fw-bold">IVA (19%):</td>
+                                    <td class="text-end fw-bold" id="cliFacIva">$0</td>
+                                </tr>
+                                <tr class="table-dark">
+                                    <td colspan="3" class="text-end fw-bold fs-5">TOTAL:</td>
+                                    <td class="text-end fw-bold fs-5" style="color:#ff6b6b;" id="cliFacTotal">$0</td>
+                                </tr>
+                            </tfoot>
+                        </table>
+
+                        <p class="text-center text-muted small mt-4 pt-2 border-top">
+                            ¡Gracias por tu compra en <strong>Rines y Llantas GT Pro</strong>!
+                        </p>
+                    </div>
+                </div>
+                <div class="modal-footer no-imprimir">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                    <button type="button" class="btn btn-gt-primario" onclick="window.print()">
+                        <i class="bi bi-printer"></i> Imprimir / Descargar Factura
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: NOTIFICACIÓN POR CORREO ELECTRÓNICO -->
+    <div class="modal fade" id="modalCorreoCliente" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content" style="color:#111111 !important;">
+                <div class="modal-header bg-dark text-white">
+                    <h5 class="modal-title fw-bold">
+                        <i class="bi bi-envelope-open-fill text-warning me-2"></i> Notificación Oficial de tu Pedido
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-3 bg-light" id="contenidoCorreoCliente">
+                    <div class="text-center py-5">
+                        <div class="spinner-border text-danger"></div> Cargando correo...
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        let clienteActualId = 0;
+        let modalFacBs = null;
+
+        document.addEventListener('DOMContentLoaded', async function() {
+            modalFacBs = new bootstrap.Modal(document.getElementById('modalFacturaCliente'));
+
+            // Verificar sesión del cliente
+            await autenticarClientePanel();
+
+            // Cargar datos de todas las secciones
+            cargarPerfilCliente();
+            cargarCotizacionesCliente();
+            cargarComprasCliente();
+            cargarDisenosCliente();
+            actualizarBadgeCarrito();
+
+            // Evento submit edición perfil
+            document.getElementById('formEditarPerfilCliente').addEventListener('submit', guardarPerfilCliente);
+        });
+
+        async function autenticarClientePanel() {
+            try {
+                const res = await fetch('api/auth.php?accion=sesion');
+                const data = await res.json();
+                if (data.exito && data.usuario) {
+                    clienteActualId = data.usuario.id;
+                    localStorage.setItem('sesionActivaCliente', 'true');
+                    localStorage.setItem('clienteId', data.usuario.id);
+                    localStorage.setItem('nombreCliente', data.usuario.nombre);
+                    document.getElementById('saludoNombreCliente').textContent = data.usuario.nombre;
+
+                    // Desbloquear vista
+                    const blocker = document.getElementById('authBlockerStyle');
+                    if (blocker) blocker.remove();
+                    document.body.style.display = 'block';
+                    return;
+                }
+            } catch (e) {}
+
+            // Respaldo local
+            if (localStorage.getItem('sesionActivaCliente') !== 'true') {
+                window.location.replace('login.html?destino=panel-cliente.html');
+                return;
+            }
+            clienteActualId = localStorage.getItem('clienteId') || 1;
+            document.getElementById('saludoNombreCliente').textContent = localStorage.getItem('nombreCliente') || 'Cliente';
+
+            // Desbloquear vista
+            const blocker = document.getElementById('authBlockerStyle');
+            if (blocker) blocker.remove();
+            document.body.style.display = 'block';
+        }
+
+        async function cargarPerfilCliente() {
+            try {
+                const res = await fetch('api/auth.php?accion=perfil&id=' + clienteActualId);
+                const data = await res.json();
+                if (data.exito && data.cliente) {
+                    const c = data.cliente;
+                    document.getElementById('perfilNombre').value = c.nombre || '';
+                    document.getElementById('perfilEmail').value = c.email || '';
+                    document.getElementById('perfilTelefono').value = c.telefono || '';
+                    document.getElementById('perfilCiudad').value = c.ciudad || '';
+                    document.getElementById('perfilDireccion').value = c.direccion || '';
+                }
+            } catch (e) {}
+        }
+
+        async function guardarPerfilCliente(e) {
+            e.preventDefault();
+            const btn = document.getElementById('btnGuardarPerfil');
+            const msg = document.getElementById('mensajePerfilFeedback');
+            btn.disabled = true;
+            btn.textContent = 'Guardando...';
+            msg.textContent = '';
+
+            const payload = {
+                id: clienteActualId,
+                nombre: document.getElementById('perfilNombre').value.trim(),
+                email: document.getElementById('perfilEmail').value.trim(),
+                telefono: document.getElementById('perfilTelefono').value.trim(),
+                ciudad: document.getElementById('perfilCiudad').value.trim(),
+                direccion: document.getElementById('perfilDireccion').value.trim(),
+                clave: document.getElementById('perfilClave').value.trim()
+            };
+
+            try {
+                const res = await fetch('api/auth.php?accion=actualizar_perfil', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(payload)
+                });
+                const data = await res.json();
+                if (data.exito) {
+                    msg.textContent = '✅ ' + data.mensaje;
+                    msg.style.color = 'green';
+                    document.getElementById('saludoNombreCliente').textContent = payload.nombre;
+                    localStorage.setItem('nombreCliente', payload.nombre);
+                    document.getElementById('perfilClave').value = '';
+                } else {
+                    msg.textContent = '⚠️ ' + data.mensaje;
+                    msg.style.color = '#dc3545';
+                }
+            } catch (err) {
+                msg.textContent = 'Error de conexión con el servidor.';
+                msg.style.color = '#dc3545';
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="bi bi-check-circle"></i> Guardar Cambios';
+            }
+        }
+
+        async function cargarCotizacionesCliente() {
+            const cont = document.getElementById('contenedorMisCotizaciones');
+            try {
+                const res = await fetch('api/cotizaciones.php?mis_cotizaciones=1&cliente_id=' + clienteActualId);
+                const data = await res.json();
+                if (data.exito && data.cotizaciones) {
+                    document.getElementById('statCotizaciones').textContent = data.cotizaciones.length;
+
+                    if (data.cotizaciones.length === 0) {
+                        cont.innerHTML = '<div class="text-center py-5"><i class="bi bi-file-earmark-text fs-1 text-muted"></i><p class="mt-2 text-muted">No has realizado ninguna cotización aún. ¡Explora nuestro catálogo o usa el Visualizador Virtual!</p><a href="catalogo.html" class="btn btn-sm btn-outline-danger">Ver Catálogo</a></div>';
+                        return;
+                    }
+
+                    let html = '<div class="table-responsive"><table class="table align-middle"><thead><tr><th>Fecha</th><th>Producto / Consulta</th><th>Diseño IA</th><th>Estado</th><th>Acción</th></tr></thead><tbody>';
+                    data.cotizaciones.forEach(c => {
+                        const badgeColor = c.estado === 'Pendiente' ? 'bg-warning text-dark' : (c.estado === 'En Proceso' ? 'bg-info text-dark' : 'bg-success');
+                        html += `
+                        <tr>
+                            <td><small class="text-muted">${c.fecha}</small></td>
+                            <td>
+                                <strong>${c.producto}</strong>
+                                ${c.mensaje ? `<div class="small text-muted">"${c.mensaje}"</div>` : ''}
+                            </td>
+                            <td>
+                                ${c.imagen_generada ? `
+                                <a href="${c.imagen_generada}" target="_blank">
+                                    <img src="${c.imagen_generada}" style="width:70px; height:45px; object-fit:cover; border-radius:6px; border:1px solid #ddd;" title="Ver diseño generado">
+                                </a>` : '<span class="text-muted small">Sin imagen</span>'}
+                            </td>
+                            <td><span class="badge ${badgeColor}">${c.estado}</span></td>
+                            <td>
+                                <a href="https://wa.me/573225817510?text=${encodeURIComponent('Hola Rines GT! Quisiera saber el estado de mi cotización: ' + c.producto)}" target="_blank" class="btn btn-sm btn-outline-success">
+                                    <i class="bi bi-whatsapp"></i> Consultar
+                                </a>
+                            </td>
+                        </tr>`;
+                    });
+                    html += '</tbody></table></div>';
+                    cont.innerHTML = html;
+                }
+            } catch (e) {
+                cont.innerHTML = '<p class="text-danger">Error al cargar cotizaciones.</p>';
+            }
+        }
+
+        async function cargarComprasCliente() {
+            const cont = document.getElementById('contenedorMisCompras');
+            try {
+                const res = await fetch('api/ventas.php?cliente_id=' + clienteActualId);
+                const data = await res.json();
+                if (data.exito && data.ventas) {
+                    document.getElementById('statCompras').textContent = data.ventas.length;
+
+                    if (data.ventas.length === 0) {
+                        cont.innerHTML = '<div class="text-center py-5"><i class="bi bi-receipt fs-1 text-muted"></i><p class="mt-2 text-muted">Aún no registras compras finalizadas.</p><a href="catalogo.html" class="btn btn-sm btn-danger">Comprar Rines o Llantas</a></div>';
+                        return;
+                    }
+
+                    let html = '<div class="table-responsive"><table class="table align-middle"><thead><tr><th>Factura N°</th><th>Fecha</th><th>Productos</th><th>Modalidad de Entrega</th><th>Estado del Pedido</th><th>Total</th><th class="text-center">Comprobante</th></tr></thead><tbody>';
+                    data.ventas.forEach(v => {
+                        const itemsTxt = (v.items || []).map(i => `${i.cantidad}x ${i.nombre_producto}`).join(', ') || 'Productos automotrices';
+                        
+                        // Modalidad
+                        let modHtml = '';
+                        if (v.tipo_entrega === 'recoger') {
+                            modHtml = `
+                                <span class="badge bg-dark text-warning"><i class="bi bi-shop me-1"></i> Apartado en Tienda</span>
+                                <div class="small text-danger fw-bold mt-1"><i class="bi bi-calendar-event me-1"></i>Pasa el: ${v.fecha_recogida || 'Por definir'}</div>
+                            `;
+                        } else {
+                            modHtml = `
+                                <span class="badge bg-secondary"><i class="bi bi-truck me-1"></i> Envío a Domicilio</span>
+                                <div class="small text-muted mt-1" style="max-width:160px;"><i class="bi bi-geo-alt me-1"></i>${v.cliente_direccion || 'Dirección registrada'}</div>
+                            `;
+                        }
+
+                        // Estado en vivo del pedido
+                        let estadoHtml = '';
+                        const st = v.estado_pedido || 'Pendiente';
+                        if (st === 'Pendiente') {
+                            estadoHtml = `
+                                <span class="badge bg-warning text-dark px-2 py-1"><i class="bi bi-hourglass-split me-1"></i> En Proceso</span>
+                                <div class="small text-muted mt-1">En espera de aprobación</div>
+                            `;
+                        } else if (st === 'Confirmado' || st === 'Aceptada') {
+                            estadoHtml = `
+                                <span class="badge bg-primary text-white px-2 py-1"><i class="bi bi-check-circle-fill me-1"></i> Aceptada</span>
+                                <div class="small text-success fw-bold mt-1">¡Aprobada por Admin!</div>
+                            `;
+                        } else if (st === 'En camino' || st === 'Enviada') {
+                            estadoHtml = `
+                                <span class="badge bg-info text-dark px-2 py-1"><i class="bi bi-truck me-1"></i> ¡Va en camino!</span>
+                                <div class="small text-primary fw-bold mt-1">${v.guia_transporte ? ('Guía: ' + v.guia_transporte) : 'Despachado a tu domicilio'}</div>
+                            `;
+                        } else if (st === 'Listo para recoger') {
+                            estadoHtml = `
+                                <span class="badge text-white px-2 py-1" style="background:#6f42c1;"><i class="bi bi-bag-check-fill me-1"></i> Apartada en Tienda</span>
+                                <div class="small fw-bold mt-1" style="color:#6f42c1;">¡Lista para recoger en taller!</div>
+                            `;
+                        } else if (st === 'Entregado' || st === 'Completada') {
+                            estadoHtml = `
+                                <span class="badge bg-success px-2 py-1"><i class="bi bi-box2-heart-fill me-1"></i> Entregada</span>
+                                <div class="small text-success mt-1">Completada con éxito</div>
+                            `;
+                        } else {
+                            estadoHtml = `<span class="badge bg-secondary">${st}</span>`;
+                        }
+
+                        html += `
+                        <tr>
+                            <td><strong class="text-danger">${v.numero_factura || ('FAC-' + v.id)}</strong></td>
+                            <td><small>${v.fecha}</small></td>
+                            <td><span class="small">${itemsTxt}</span></td>
+                            <td>${modHtml}</td>
+                            <td>${estadoHtml}</td>
+                            <td class="fw-bold text-success fs-6">$${Number(v.total).toLocaleString('es-CO')}</td>
+                            <td class="text-center">
+                                <div class="d-flex flex-column gap-1">
+                                    <button class="btn btn-sm btn-outline-dark" onclick="verFacturaCliente(${v.id})">
+                                        <i class="bi bi-printer"></i> Factura
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-danger" onclick="verCorreoNotificacionCliente(${v.id})" title="Ver correo de confirmación de tu pedido">
+                                        <i class="bi bi-envelope-check"></i> Notificación
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>`;
+                    });
+                    html += '</tbody></table></div>';
+                    cont.innerHTML = html;
+                }
+            } catch (e) {
+                cont.innerHTML = '<p class="text-danger">Error al cargar compras.</p>';
+            }
+        }
+
+        async function verFacturaCliente(ventaId) {
+            try {
+                const res = await fetch('api/ventas.php?id=' + ventaId);
+                const data = await res.json();
+                if (data.exito && data.factura) {
+                    const f = data.factura;
+                    document.getElementById('cliFacNum').textContent = f.numero_factura || ('FAC-' + f.id);
+                    document.getElementById('cliFacFecha').textContent = f.fecha;
+                    document.getElementById('cliFacNombre').textContent = f.cliente_nombre || 'Cliente';
+                    document.getElementById('cliFacTel').textContent = f.cliente_telefono || 'No registrado';
+                    document.getElementById('cliFacDir').textContent = f.cliente_direccion || 'Sogamoso';
+                    document.getElementById('cliFacMetodo').textContent = f.metodo_pago || 'Efectivo';
+
+                    const tbody = document.getElementById('cliFacTbody');
+                    tbody.innerHTML = '';
+                    (f.detalles || []).forEach(d => {
+                        tbody.innerHTML += `
+                        <tr>
+                            <td>${d.nombre_producto || d.nombre}</td>
+                            <td class="text-center">${d.cantidad}</td>
+                            <td class="text-end">$${Number(d.precio_unitario).toLocaleString('es-CO')}</td>
+                            <td class="text-end fw-bold">$${Number(d.subtotal).toLocaleString('es-CO')}</td>
+                        </tr>`;
+                    });
+
+                    document.getElementById('cliFacSub').textContent = '$' + Number(f.subtotal).toLocaleString('es-CO');
+                    document.getElementById('cliFacIva').textContent = '$' + Number(f.iva).toLocaleString('es-CO');
+                    document.getElementById('cliFacTotal').textContent = '$' + Number(f.total).toLocaleString('es-CO');
+
+                    modalFacBs.show();
+                }
+            } catch (e) {
+                alert('Error al consultar factura.');
+            }
+        }
+
+        async function cargarDisenosCliente() {
+            const cont = document.getElementById('contenedorMisDisenos');
+            try {
+                const res = await fetch('api/disenos.php?cliente_id=' + clienteActualId);
+                const data = await res.json();
+                if (data.exito && data.disenos) {
+                    document.getElementById('statDisenos').textContent = data.disenos.length;
+
+                    if (data.disenos.length === 0) {
+                        cont.innerHTML = '<div class="col-12 text-center py-5"><i class="bi bi-car-front fs-1 text-muted"></i><p class="mt-2 text-muted">No has guardado diseños de tu vehículo todavía.</p><a href="visualizador.html" class="btn btn-sm btn-gt-primario"><i class="bi bi-car-front-fill me-1"></i> Probar Visualizador Virtual</a></div>';
+                        return;
+                    }
+
+                    let html = '';
+                    data.disenos.forEach(d => {
+                        html += `
+                        <div class="tarjeta-diseno">
+                            <img src="${d.imagen_resultado}" alt="${d.nombre_rin}">
+                            <div class="p-3">
+                                <h6 class="fw-bold mb-1">${d.nombre_rin}</h6>
+                                <div class="text-muted small mb-2"><i class="bi bi-calendar"></i> ${d.fecha}</div>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span class="badge ${d.cotizado ? 'bg-success' : 'bg-secondary'}">
+                                        ${d.cotizado ? 'Cotizado' : 'Borrador'}
+                                    </span>
+                                    <a href="visualizador.html" class="btn btn-sm btn-outline-danger">Ver en Visualizador</a>
+                                </div>
+                            </div>
+                        </div>`;
+                    });
+                    cont.innerHTML = html;
+                }
+            } catch (e) {
+                cont.innerHTML = '<p class="text-danger">Error al cargar diseños.</p>';
+            }
+        }
+
+        function actualizarBadgeCarrito() {
+            const carrito = JSON.parse(localStorage.getItem('carrito') || '[]');
+            const cant = carrito.reduce((sum, item) => sum + (parseInt(item.cantidad) || 1), 0);
+            document.getElementById('statCarrito').textContent = cant;
+            document.getElementById('badgeContadorCarrito').textContent = cant;
+        }
+
+        let modalCorreoClienteBs = null;
+        async function verCorreoNotificacionCliente(ventaId) {
+            if (!modalCorreoClienteBs) {
+                modalCorreoClienteBs = new bootstrap.Modal(document.getElementById('modalCorreoCliente'));
+            }
+            const cont = document.getElementById('contenidoCorreoCliente');
+            cont.innerHTML = '<div class="text-center py-5"><div class="spinner-border text-danger"></div> Cargando correo...</div>';
+            modalCorreoClienteBs.show();
+
+            try {
+                const res = await fetch('api/ventas.php?accion=ver_correo&venta_id=' + ventaId);
+                const data = await res.json();
+                if (data.exito && data.correo) {
+                    const c = data.correo;
+                    cont.innerHTML = `
+                        <div class="p-3 bg-white border rounded shadow-sm mb-3">
+                            <div class="row g-2 small">
+                                <div class="col-sm-6"><strong>Destinatario:</strong> <span class="text-primary">${c.destinatario}</span></div>
+                                <div class="col-sm-6 text-sm-end"><strong>Fecha:</strong> ${c.fecha_envio}</div>
+                                <div class="col-12"><strong>Asunto:</strong> <span class="fw-bold text-dark">${c.asunto}</span></div>
+                            </div>
+                        </div>
+                        <div style="background:white; border-radius:8px; overflow:hidden; border:1px solid #ddd;">
+                            ${c.html}
+                        </div>
+                    `;
+                } else {
+                    cont.innerHTML = `<div class="alert alert-info text-center m-3">${data.mensaje || 'Tu pedido está siendo procesado por el administrador. Aún no se ha generado correo.'}</div>`;
+                }
+            } catch (e) {
+                cont.innerHTML = '<div class="alert alert-danger m-3">Error al cargar la notificación.</div>';
+            }
+        }
+
+        async function cerrarSesionCliente() {
+            try {
+                await fetch('api/auth.php?accion=logout');
+            } catch (e) {}
+            localStorage.removeItem('sesionActivaCliente');
+            localStorage.removeItem('nombreCliente');
+            localStorage.removeItem('emailCliente');
+            localStorage.removeItem('clienteId');
+            window.location.href = 'index.html';
+        }
+    </script>
+    <script src="js/tutorial-avatar.js?v=3.0"></script>
+    <script src="js/movil-pwa.js?v=3.0"></script>
+</body>
+</html>

@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Catálogo Oficial — Rines y Llantas GT Pro</title>
+    
+    <link rel="icon" type="image/png" href="imagenes/favicon.png">
+    <link rel="apple-touch-icon" href="imagenes/app-icon-192.png">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#8C1F1F">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Rines GT Pro">
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="css/estilos.css?v=3.0">
+    <link rel="stylesheet" href="css/catalogo.css?v=3.0">
+    
+    <style>
+        .banner-catalogo {
+            background: linear-gradient(135deg, #121212 0%, #222 100%);
+            color: white;
+            padding: 50px 0 35px;
+            text-align: center;
+            border-bottom: 3px solid var(--rojo-elegante);
+        }
+        .tarjeta-producto-moderna {
+            background: white;
+            border-radius: 16px;
+            overflow: hidden;
+            border: 1px solid #eee;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+        .tarjeta-producto-moderna:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 12px 30px rgba(140,31,31,0.15);
+            border-color: #8C1F1F;
+        }
+        .caja-imagen-prod {
+            position: relative;
+            background: #f7f7f9;
+            padding: 20px;
+            text-align: center;
+            height: 220px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .caja-imagen-prod img {
+            max-height: 180px;
+            max-width: 100%;
+            object-fit: contain;
+            transition: transform 0.3s ease;
+        }
+        .tarjeta-producto-moderna:hover .caja-imagen-prod img {
+            transform: scale(1.06);
+        }
+        .badge-cat-flotante {
+            position: absolute;
+            top: 12px;
+            left: 12px;
+            font-size: 0.72rem;
+            text-transform: uppercase;
+            font-weight: 700;
+            padding: 4px 10px;
+            border-radius: 20px;
+            background: #1a1a1a;
+            color: white;
+        }
+        .badge-disp-flotante {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            font-size: 0.72rem;
+            font-weight: 700;
+            padding: 4px 10px;
+            border-radius: 20px;
+        }
+        .cuerpo-prod {
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+        }
+        .titulo-prod {
+            font-weight: 800;
+            font-size: 1.1rem;
+            color: #1a1a1a;
+            margin-bottom: 6px;
+        }
+        .desc-prod {
+            color: #666;
+            font-size: 0.86rem;
+            line-height: 1.4;
+            margin-bottom: 15px;
+            flex-grow: 1;
+        }
+        .precio-prod {
+            font-size: 1.35rem;
+            font-weight: 900;
+            color: var(--rojo-elegante);
+            margin-bottom: 15px;
+        }
+        .toast-notif {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            z-index: 9999;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- BARRA DE NAVEGACIÓN -->
+    <nav class="navbar navbar-expand-lg fixed-top">
+        <div class="container">
+            <a class="navbar-brand d-flex align-items-center gap-2" href="index.html">
+                <img src="imagenes/logo-gt-pro.png" alt="Rines y Llantas GT Pro" class="logo-navbar">
+                <span class="logo-texto d-none d-sm-inline">RINES & LLANTAS GT <span>PRO</span></span>
+            </a>
+            <button class="navbar-toggler text-white" type="button" data-bs-toggle="collapse" data-bs-target="#navCatalogo">
+                <span class="navbar-toggler-icon" style="filter:invert(1);"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navCatalogo">
+                <ul class="navbar-nav ms-auto align-items-center">
+                    <li class="nav-item"><a class="nav-link" href="index.html">Inicio</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="catalogo.html">Catálogo</a></li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="visualizador.html" style="color:#ffd700 !important;">
+                            <i class="bi bi-car-front-fill me-1"></i> Visualizador Virtual
+                        </a>
+                    </li>
+                    <li class="nav-item"><a class="nav-link" href="#contacto">Contacto</a></li>
+                    <li class="nav-item ms-lg-2">
+                        <a class="nav-link position-relative px-3" href="carrito.html" title="Ver mi carrito de compras">
+                            <i class="bi bi-cart3 fs-5"></i>
+                            <span class="badge bg-danger rounded-pill position-absolute top-0 start-100 translate-middle" id="badgeNavCarrito">0</span>
+                        </a>
+                    </li>
+                    <li class="nav-item ms-lg-3">
+                        <a class="btn btn-outline-light btn-sm px-3" href="login.html" id="btnSesionNavbar">
+                            <i class="bi bi-person"></i> Ingresar
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- BANNER DEL CATÁLOGO -->
+    <header class="banner-catalogo">
+        <div class="container">
+            <span class="badge bg-danger px-3 py-2 mb-2 fw-bold">CATÁLOGO 2026</span>
+            <h1 style="font-weight:900;" class="mb-2">Rines y Llantas de Lujo GT Pro</h1>
+            <p style="color:#ccc; max-width:650px; margin:0 auto 20px;">
+                Descubre nuestra selección exclusiva de rines forjados, llantas de alto rendimiento y accesorios. Pruébalos en tu propio vehículo con nuestro Visualizador Virtual de Inteligencia Artificial.
+            </p>
+            <a href="visualizador.html" class="btn btn-gt-primario btn-lg" style="box-shadow: 0 4px 20px rgba(140,31,31,0.5);">
+                <i class="bi bi-magic"></i> Probar en mi Vehículo con IA
+            </a>
+        </div>
+    </header>
+
+    <!-- SECCIÓN DE PRODUCTOS Y FILTROS -->
+    <section class="py-5">
+        <div class="container">
+            <!-- Barra de búsqueda y categorías -->
+            <div class="row g-3 justify-content-between align-items-center mb-4">
+                <div class="col-md-6 col-lg-5">
+                    <div class="input-group">
+                        <span class="input-group-text bg-white"><i class="bi bi-search"></i></span>
+                        <input type="text" id="busquedaInput" class="form-control" placeholder="Buscar por nombre, rin, modelo, medida...">
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-7 text-md-end">
+                    <div class="d-flex flex-wrap gap-2 justify-content-md-end">
+                        <button class="btn-filtro activo" data-filtro="todos">Todos</button>
+                        <button class="btn-filtro" data-filtro="rines">Rines</button>
+                        <button class="btn-filtro" data-filtro="llantas">Llantas</button>
+                        <button class="btn-filtro" data-filtro="accesorios">Accesorios</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CONTENEDOR DE PRODUCTOS GRID -->
+            <div id="gridProductos" class="row g-4">
+                <div class="col-12 text-center py-5">
+                    <div class="spinner-border text-danger"></div>
+                    <p class="text-muted mt-2">Cargando catálogo en tiempo real desde el inventario...</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SECCIÓN DE CONTACTO / COTIZACIÓN DIRECTA -->
+    <section id="contacto" class="py-5 bg-dark text-white">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-7">
+                    <div class="text-center mb-4">
+                        <h2 style="font-weight:900;" class="text-white">Solicitar Asesoría o Cotización</h2>
+                        <p style="color:#aaa;">Déjanos tus datos y un especialista de GT Pro te asesorará en las mejores opciones para tu vehículo.</p>
+                    </div>
+                    <div style="background:#1e1e1e; padding:35px; border-radius:16px; border:1px solid #333;">
+                        <form id="formCotizacionCatalogo">
+                            <div class="row g-3 mb-3">
+                                <div class="col-md-6">
+                                    <label class="form-label text-white small fw-bold">Nombre Completo *</label>
+                                    <input type="text" id="cotNombre" class="form-control" placeholder="Ej: Juan Pérez" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label text-white small fw-bold">WhatsApp / Teléfono *</label>
+                                    <input type="tel" id="cotWhatsapp" class="form-control" placeholder="322 581 7510" required>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label text-white small fw-bold">Producto o Medida de Interés</label>
+                                <input type="text" id="cotProducto" class="form-control" placeholder="Ej: Rin Titan 20 pulgadas o Llantas 245/40R19">
+                            </div>
+                            <div class="mb-4">
+                                <label class="form-label text-white small fw-bold">Mensaje o Pregunta</label>
+                                <textarea id="cotMensaje" class="form-control" rows="3" placeholder="¿Qué marca y modelo de carro tienes?"></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-gt-primario w-100 py-3 fw-bold" id="btnEnviarCot">
+                                <i class="bi bi-send"></i> Enviar Solicitud de Cotización
+                            </button>
+                            <p id="msgCotRespuesta" class="text-center mt-2 fw-bold"></p>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- TOAST NOTIFICACIÓN CARRITO -->
+    <div class="toast-notif">
+        <div class="toast align-items-center text-white bg-dark border-0" id="toastCarrito" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="d-flex">
+                <div class="toast-body d-flex align-items-center gap-2">
+                    <i class="bi bi-check-circle-fill text-success fs-5"></i>
+                    <span id="toastMsg">Producto agregado al carrito.</span>
+                </div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL COTIZAR PRODUCTO ESPECÍFICO -->
+    <div class="modal fade" id="modalCotizarProd" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-dark text-white">
+                    <h5 class="modal-title fw-bold" id="modalCotProdTitulo">Cotizar Producto</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <form id="formCotizarModal">
+                        <input type="hidden" id="modalProdId">
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Producto Seleccionado</label>
+                            <input type="text" class="form-control bg-light" id="modalProdNombre" readonly>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Tu Nombre Completo *</label>
+                            <input type="text" class="form-control" id="modalProdClienteNombre" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">WhatsApp / Teléfono *</label>
+                            <input type="tel" class="form-control" id="modalProdClienteTel" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Mensaje / Ciudad</label>
+                            <textarea class="form-control" id="modalProdClienteMensaje" rows="2" placeholder="Indícanos para qué carro los buscas..."></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-gt-primario w-100">
+                            <i class="bi bi-send"></i> Enviar Cotización
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="js/catalogo.js"></script>
+    <script src="js/movil-pwa.js"></script>
+</body>
+</html>

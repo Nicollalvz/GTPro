@@ -1,0 +1,663 @@
+/* ==========================================
+   PALETA: ROJOS • NEGROS • BLANCOS
+   ========================================== */
+:root {
+    --rojo-profundo: #4A0F0F;
+    --rojo-elegante: #8C1F1F;
+    --rojo-suave: #B83030;
+    --negro-profundo: #0A0A0A;
+    --negro-suave: #1E1E1E;
+    --gris-medio: #444444;
+    --gris-claro: #F5F5F5;
+    --blanco-puro: #FFFFFF;
+    --sombra: 0 4px 20px rgba(0, 0, 0, 0.15);
+}
+
+/* ==========================================
+   GENERALES
+   ========================================== */
+* {
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Montserrat', sans-serif;
+    background-color: var(--gris-claro);
+    color: var(--negro-profundo);
+    margin: 0;
+    padding-top: 70px;
+}
+
+/* ==========================================
+   BARRA DE NAVEGACIÓN
+   ========================================== */
+.navbar {
+    background-color: var(--negro-profundo);
+    box-shadow: 0 2px 15px rgba(0,0,0,0.3);
+    padding: 15px 0;
+    border-bottom: 2px solid var(--rojo-elegante);
+}
+
+.logo-texto {
+    color: var(--blanco-puro);
+    font-weight: 900;
+    font-size: 1.3rem;
+    letter-spacing: 1px;
+    text-decoration: none;
+}
+
+.logo-texto span {
+    color: var(--rojo-elegante);
+}
+
+.nav-link {
+    color: var(--blanco-puro) !important;
+    font-weight: 600;
+    margin: 0 10px;
+    transition: color 0.3s ease;
+}
+
+.nav-link:hover, .nav-link.active {
+    color: var(--rojo-suave) !important;
+}
+
+.btn-ingresar {
+    background-color: var(--rojo-elegante);
+    color: var(--blanco-puro) !important;
+    border-radius: 30px;
+    padding: 8px 25px !important;
+    margin-left: 10px;
+    font-weight: 700;
+    transition: all 0.3s ease;
+    border: none;
+    text-decoration: none;
+}
+
+.btn-ingresar:hover {
+    background-color: var(--rojo-suave);
+    transform: scale(1.05);
+}
+
+/* ==========================================
+   BOTONES GENERALES
+   ========================================== */
+.btn-primario {
+    background-color: var(--rojo-elegante);
+    color: var(--blanco-puro);
+    font-weight: 700;
+    padding: 12px 30px;
+    border-radius: 50px;
+    border: none;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-block;
+    cursor: pointer;
+}
+
+.btn-primario:hover {
+    background-color: var(--rojo-suave);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(140, 31, 31, 0.4);
+    color: var(--blanco-puro);
+}
+
+.btn-secundario {
+    border: 2px solid var(--rojo-elegante);
+    color: var(--rojo-elegante);
+    font-weight: 700;
+    padding: 12px 30px;
+    border-radius: 50px;
+    background: transparent;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-block;
+    cursor: pointer;
+}
+
+.btn-secundario:hover {
+    background-color: var(--rojo-elegante);
+    color: var(--blanco-puro);
+}
+
+/* ==========================================
+   SECCIÓN PRINCIPAL / HERO
+   ========================================== */
+.hero {
+    min-height: 85vh;
+    display: flex;
+    align-items: center;
+    background: linear-gradient(135deg, var(--negro-profundo) 0%, var(--rojo-profundo) 100%);
+    color: var(--blanco-puro);
+    padding: 60px 20px;
+    text-align: center;
+}
+
+.hero h1 {
+    font-size: 3.5rem;
+    font-weight: 900;
+    margin-bottom: 20px;
+}
+
+.hero .subtitulo, .hero-subtitulo {
+    font-size: 1.3rem;
+    color: #BBB;
+    margin-bottom: 40px;
+}
+
+/* ==========================================
+   PIE DE PÁGINA
+   ========================================== */
+footer {
+    background-color: var(--negro-profundo);
+    color: var(--blanco-puro);
+    text-align: center;
+    padding: 30px 20px;
+    margin-top: 60px;
+    border-top: 2px solid var(--rojo-elegante);
+}
+
+@media (max-width: 768px) {
+    .hero h1 { font-size: 2rem; }
+    .hero .subtitulo { font-size: 1rem; }
+}
+
+
+/* ==========================================
+   BOTONES Y ESTILOS GT PRO MODERNOS
+   ========================================== */
+.btn-gt-primario {
+    background: linear-gradient(135deg, #8C1F1F 0%, #4A0F0F 100%) !important;
+    color: #ffffff !important;
+    border: none;
+    padding: 10px 22px;
+    font-weight: 800;
+    border-radius: 8px;
+    transition: all 0.25s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    text-decoration: none;
+    box-shadow: 0 4px 14px rgba(140, 31, 31, 0.35);
+}
+
+.btn-gt-primario:hover {
+    background: #b30000 !important;
+    color: #ffffff !important;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(179, 0, 0, 0.45);
+}
+
+.btn-gt-secundario {
+    background: transparent !important;
+    color: #8C1F1F !important;
+    border: 2px solid #8C1F1F !important;
+    padding: 10px 22px;
+    font-weight: 800;
+    border-radius: 8px;
+    transition: all 0.25s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    text-decoration: none;
+}
+
+.btn-gt-secundario:hover {
+    background: #8C1F1F !important;
+    color: #ffffff !important;
+    transform: translateY(-2px);
+}
+
+
+/* ===================================================
+   LOGO OFICIAL GT PRO & NAVBAR RESPONSIVE
+   =================================================== */
+.logo-navbar {
+    height: 48px;
+    width: auto;
+    max-width: 130px;
+    object-fit: contain;
+    filter: drop-shadow(0 2px 8px rgba(0,0,0,0.45));
+    transition: transform 0.25s ease;
+}
+
+.navbar-brand:hover .logo-navbar {
+    transform: scale(1.06);
+}
+
+@media (max-width: 768px) {
+    .logo-navbar {
+        height: 40px;
+        max-width: 105px;
+    }
+    .logo-texto {
+        font-size: 1.05rem !important;
+    }
+}
+
+@media (max-width: 480px) {
+    .logo-navbar {
+        height: 36px;
+        max-width: 95px;
+    }
+    .logo-texto {
+        font-size: 0.95rem !important;
+    }
+}
+
+/* ===================================================
+   VERSIÓN CELULAR — EXPERIENCIA ESTILO APP (PWA)
+   =================================================== */
+@media (max-width: 991.98px) {
+    body {
+        padding-bottom: 78px !important; /* Espacio para que la barra inferior no tape contenido */
+    }
+    .navbar-collapse {
+        background: #141418;
+        padding: 18px;
+        border-radius: 14px;
+        margin-top: 12px;
+        border: 1px solid rgba(255,255,255,0.08);
+        box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    }
+}
+
+/* BARRA DE NAVEGACIÓN INFERIOR FIJA ESTILO APP MÓVIL */
+.mobile-bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 64px;
+    background: rgba(14, 14, 18, 0.96);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 -4px 25px rgba(0, 0, 0, 0.45);
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    z-index: 1040;
+    padding: 0 6px;
+}
+
+.nav-item-movil {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: #9ca3af;
+    text-decoration: none;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+    flex: 1;
+    height: 100%;
+    transition: all 0.2s ease;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.nav-item-movil i {
+    font-size: 1.25rem;
+    line-height: 1;
+    margin-bottom: 3px;
+    transition: transform 0.2s ease;
+}
+
+.nav-item-movil:hover,
+.nav-item-movil:focus {
+    color: #ffffff;
+}
+
+.nav-item-movil.activo {
+    color: #ff3b3b;
+}
+
+.nav-item-movil.activo i {
+    transform: translateY(-2px);
+    color: #ff3b3b;
+    filter: drop-shadow(0 2px 8px rgba(255, 59, 59, 0.5));
+}
+
+/* Botón central especial IA */
+.nav-item-movil.destacado-ia {
+    color: #ffd700;
+}
+
+.nav-item-movil.destacado-ia .icono-wrap {
+    background: linear-gradient(135deg, #8C1F1F 0%, #b30000 100%);
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: -16px;
+    margin-bottom: 2px;
+    box-shadow: 0 4px 15px rgba(179, 0, 0, 0.6);
+    border: 2px solid #ffffff;
+    transition: transform 0.25s ease;
+}
+
+.nav-item-movil.destacado-ia i {
+    color: #ffffff;
+    font-size: 1.35rem;
+    margin-bottom: 0;
+}
+
+.nav-item-movil.destacado-ia:hover .icono-wrap,
+.nav-item-movil.destacado-ia.activo .icono-wrap {
+    transform: scale(1.1);
+    box-shadow: 0 6px 20px rgba(255, 59, 59, 0.8);
+}
+
+/* Badge contador del carrito en barra móvil */
+.badge-movil-carrito {
+    position: absolute;
+    top: -5px;
+    right: -8px;
+    background: #ff2222;
+    color: #ffffff;
+    font-size: 0.65rem;
+    font-weight: 800;
+    min-width: 17px;
+    height: 17px;
+    border-radius: 50%;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 0 4px;
+    border: 2px solid #0e0e12;
+}
+
+/* ===================================================
+   BOTÓN REDONDO DE INSTALACIÓN PWA (ESTILO DISCRETO)
+   =================================================== */
+.boton-pwa-redondo {
+    position: fixed;
+    bottom: 25px;
+    left: 25px;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: #11141a;
+    color: #ffffff !important;
+    border: 2px solid #8C1F1F;
+    font-size: 22px;
+    cursor: pointer;
+    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.4);
+    z-index: 1045;
+    transition: all 0.25s ease;
+    display: none; /* Se activa mediante beforeinstallprompt */
+    align-items: center;
+    justify-content: center;
+    user-select: none;
+    text-decoration: none;
+}
+
+.boton-pwa-redondo:hover {
+    transform: scale(1.1) translateY(-2px);
+    background: #8C1F1F;
+    box-shadow: 0 6px 20px rgba(140, 31, 31, 0.6);
+    color: #ffffff !important;
+}
+
+@media (max-width: 991.98px) {
+    .boton-pwa-redondo {
+        bottom: 78px;
+        left: 18px;
+        width: 46px;
+        height: 46px;
+        font-size: 20px;
+    }
+}
+
+/* ===================================================
+   ASISTENTE VIRTUAL IA (BOTÓN FLOTANTE Y CHAT)
+   =================================================== */
+.boton-chat {
+    position: fixed;
+    bottom: 25px;
+    right: 25px;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #8C1F1F, #4A0F0F);
+    color: #ffffff !important;
+    border: 2px solid rgba(255,255,255,0.3);
+    font-size: 26px;
+    cursor: pointer;
+    box-shadow: 0 4px 18px rgba(140, 31, 31, 0.5);
+    z-index: 1045;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    user-select: none;
+}
+
+.boton-chat .badge-punto-online {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    width: 14px;
+    height: 14px;
+    background: #10b981;
+    border-radius: 50%;
+    border: 2px solid #ffffff;
+    box-shadow: 0 0 8px #10b981;
+}
+
+.tarjeta-wsp-escalado {
+    background: #ecfdf5;
+    border: 1px solid #10b981;
+    border-radius: 12px;
+    padding: 12px;
+    margin-top: 8px;
+}
+
+.rin-overlay.seleccionado {
+    outline: 2px dashed #00b4d8 !important;
+    outline-offset: 3px;
+    filter: drop-shadow(0 0 10px rgba(0, 180, 216, 0.8)) !important;
+}
+
+.boton-chat:hover {
+    transform: scale(1.1) translateY(-2px);
+    box-shadow: 0 8px 25px rgba(179, 0, 0, 0.7);
+    color: #ffffff !important;
+}
+
+@media (max-width: 991.98px) {
+    .boton-chat {
+        bottom: 78px; /* Ubicado exactamente encima de la barra móvil */
+        right: 18px;
+        width: 52px;
+        height: 52px;
+        font-size: 23px;
+    }
+}
+
+.caja-chat {
+    position: fixed;
+    bottom: 95px;
+    right: 25px;
+    width: 360px;
+    max-height: 520px;
+    background: #ffffff;
+    border-radius: 18px;
+    box-shadow: 0 10px 35px rgba(0,0,0,0.35);
+    display: none;
+    flex-direction: column;
+    z-index: 1050;
+    overflow: hidden;
+    border: 2px solid #8C1F1F;
+    animation: chatPopup 0.25s ease-out;
+}
+
+@keyframes chatPopup {
+    from { transform: scale(0.9); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+}
+
+@media (max-width: 991.98px) {
+    .caja-chat {
+        bottom: 140px;
+        left: 15px;
+        right: 15px;
+        width: auto;
+        max-height: 480px;
+    }
+}
+
+.encabezado-chat {
+    background: linear-gradient(135deg, #8C1F1F, #4A0F0F);
+    color: white;
+    padding: 14px 18px;
+    font-weight: 700;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.cerrar-chat {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 22px;
+    cursor: pointer;
+    line-height: 1;
+}
+
+.mensajes-chat {
+    padding: 16px;
+    height: 310px;
+    overflow-y: auto;
+    background: #f8fafc;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.mensaje {
+    padding: 10px 14px;
+    border-radius: 16px;
+    max-width: 85%;
+    font-size: 0.88rem;
+    line-height: 1.4;
+}
+
+.mensaje-asistente {
+    background: #e2e8f0;
+    color: #0f172a;
+    border-bottom-left-radius: 4px;
+    align-self: flex-start;
+}
+
+.mensaje-usuario {
+    background: #8C1F1F;
+    color: #ffffff;
+    border-bottom-right-radius: 4px;
+    align-self: flex-end;
+}
+
+.entrada-chat {
+    display: flex;
+    padding: 10px 12px;
+    border-top: 1px solid #e2e8f0;
+    gap: 8px;
+    background: #ffffff;
+}
+
+.entrada-chat input {
+    flex: 1;
+    padding: 9px 14px;
+    border-radius: 20px;
+    border: 1.5px solid #cbd5e1;
+    outline: none;
+    color: #0f172a;
+    font-size: 0.88rem;
+}
+
+.entrada-chat input:focus {
+    border-color: #8C1F1F;
+}
+
+.entrada-chat button {
+    background: #8C1F1F;
+    color: white;
+    border: none;
+    padding: 8px 18px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-weight: 700;
+    font-size: 0.85rem;
+    transition: background 0.2s;
+}
+
+.entrada-chat button:hover {
+    background: #b30000;
+}
+
+/* ESTILO TYPEBOT - OPCIONES INTERACTIVAS Y BOTONES DE FLUJO */
+.typebot-opciones-flujo {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-top: 10px;
+}
+
+.typebot-btn-opcion {
+    background: #ffffff;
+    color: #8C1F1F;
+    border: 1.5px solid #8C1F1F;
+    border-radius: 14px;
+    padding: 7px 12px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    cursor: pointer;
+    text-align: left;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.typebot-btn-opcion:hover {
+    background: #8C1F1F;
+    color: #ffffff;
+    transform: translateX(3px);
+    box-shadow: 0 3px 8px rgba(140, 31, 31, 0.25);
+}
+
+.typebot-chips-preguntas {
+    max-height: 95px;
+    overflow-y: auto;
+    padding: 6px 8px;
+    background: #f8fafc;
+    border-top: 1px solid #e2e8f0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+}
+
+.typebot-chip-btn {
+    background: #ffffff;
+    color: #334155;
+    border: 1px solid #cbd5e1;
+    border-radius: 12px;
+    padding: 3px 8px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.15s ease;
+}
+
+.typebot-chip-btn:hover {
+    background: #8C1F1F;
+    color: #ffffff;
+    border-color: #8C1F1F;
+}

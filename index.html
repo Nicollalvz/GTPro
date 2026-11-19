@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="es" data-bs-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Rines y Llantas GT Pro — Lujo, Rendimiento y Visualizador Virtual</title>
+    
+    <link rel="icon" type="image/png" href="imagenes/favicon.png">
+    <link rel="apple-touch-icon" href="imagenes/app-icon-192.png">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#8C1F1F">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Rines GT Pro">
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="css/estilos.css?v=3.0">
+    
+    <style>
+        :root {
+            --rojo-principal: #8C1F1F;
+            --rojo-oscuro: #4A0F0F;
+            --rojo-vivo: #b30000;
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif !important;
+            background-color: #f7f8fa;
+            color: #111111;
+            padding-top: 75px;
+        }
+
+        /* BARRA DE NAVEGACIÓN PROFESIONAL */
+        .navbar {
+            background-color: #121212 !important;
+            border-bottom: 3px solid var(--rojo-principal);
+            padding: 14px 0;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+        }
+
+        .logo-texto {
+            font-weight: 900;
+            font-size: 1.35rem;
+            color: #ffffff !important;
+            letter-spacing: 0.5px;
+            text-decoration: none;
+        }
+        .logo-texto span {
+            color: #ff3333 !important;
+            font-size: 1.1rem;
+        }
+
+        .nav-link {
+            color: #ffffff !important;
+            font-weight: 700;
+            font-size: 0.95rem;
+            margin: 0 8px;
+            transition: all 0.2s;
+        }
+        .nav-link:hover, .nav-link.active {
+            color: #ff4d4d !important;
+        }
+
+        /* CARRUSEL HERO IMPACTANTE */
+        .carrusel-hero-item {
+            height: 520px;
+            background-size: cover;
+            background-position: center;
+            position: relative;
+        }
+
+        @media (max-width: 768px) {
+            .carrusel-hero-item {
+                height: 440px;
+            }
+        }
+
+        .overlay-carrusel {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, rgba(10,10,12,0.92) 0%, rgba(10,10,12,0.75) 50%, rgba(10,10,12,0.3) 100%);
+            display: flex;
+            align-items: center;
+        }
+
+        @media (max-width: 768px) {
+            .overlay-carrusel {
+                background: linear-gradient(180deg, rgba(10,10,12,0.85) 0%, rgba(10,10,12,0.7) 60%, rgba(10,10,12,0.9) 100%);
+            }
+        }
+
+        .carrusel-caption-custom {
+            max-width: 650px;
+            color: #ffffff;
+            text-align: left;
+            padding: 0 20px;
+        }
+
+        .carrusel-caption-custom h1 {
+            font-size: 3rem;
+            font-weight: 900;
+            line-height: 1.15;
+            text-transform: uppercase;
+            margin-bottom: 15px;
+            text-shadow: 0 3px 15px rgba(0,0,0,0.6);
+        }
+
+        @media (max-width: 768px) {
+            .carrusel-caption-custom h1 {
+                font-size: 2rem;
+            }
+        }
+
+        .carrusel-caption-custom p {
+            font-size: 1.15rem;
+            color: #e2e8f0;
+            margin-bottom: 25px;
+            font-weight: 500;
+            text-shadow: 0 2px 8px rgba(0,0,0,0.7);
+        }
+
+        .carousel-indicators [data-bs-target] {
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            margin: 0 6px;
+            background-color: #ffffff;
+            border: 2px solid var(--rojo-principal);
+            opacity: 0.6;
+        }
+        .carousel-indicators .active {
+            opacity: 1;
+            background-color: #ff3333;
+            transform: scale(1.2);
+        }
+
+        .carousel-control-prev-icon, .carousel-control-next-icon {
+            background-color: rgba(140, 31, 31, 0.85);
+            padding: 24px;
+            border-radius: 50%;
+            background-size: 55%;
+        }
+
+        /* SECCIONES DESTACADAS */
+        .seccion-titulo {
+            text-align: center;
+            font-weight: 900;
+            color: #111111;
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+        }
+        .seccion-subtitulo {
+            text-align: center;
+            color: #555555;
+            max-width: 650px;
+            margin: 0 auto 40px;
+            font-weight: 500;
+        }
+
+        .tarjeta-feature {
+            background: #ffffff;
+            border-radius: 16px;
+            padding: 35px 25px;
+            text-align: center;
+            border: 2px solid #e2e8f0;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+            transition: all 0.3s ease;
+            height: 100%;
+        }
+        .tarjeta-feature:hover {
+            transform: translateY(-8px);
+            border-color: var(--rojo-principal);
+            box-shadow: 0 12px 30px rgba(140, 31, 31, 0.15);
+        }
+        .tarjeta-feature .icono-grande {
+            font-size: 3.2rem;
+            margin-bottom: 15px;
+            display: inline-block;
+        }
+
+        /* TARJETAS DE PRODUCTO DESTACADO */
+        .tarjeta-prod-home {
+            background: #ffffff;
+            border-radius: 16px;
+            overflow: hidden;
+            border: 2px solid #e2e8f0;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+        .tarjeta-prod-home:hover {
+            transform: translateY(-6px);
+            border-color: var(--rojo-principal);
+            box-shadow: 0 12px 25px rgba(140, 31, 31, 0.15);
+        }
+        .tarjeta-prod-home .caja-img {
+            background: #f7f7f9;
+            padding: 25px;
+            text-align: center;
+            height: 220px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .tarjeta-prod-home .caja-img img {
+            max-height: 170px;
+            max-width: 100%;
+            object-fit: contain;
+            transition: transform 0.3s;
+        }
+        .tarjeta-prod-home:hover .caja-img img {
+            transform: scale(1.08);
+        }
+        .tarjeta-prod-home .cuerpo {
+            padding: 22px;
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+        }
+
+        /* BANNER IA INTERACTIVO */
+        .banner-ia-cta {
+            background: linear-gradient(135deg, #111111 0%, #1f1f1f 100%);
+            color: #ffffff;
+            border-radius: 20px;
+            padding: 50px 40px;
+            border: 2px solid var(--rojo-principal);
+            box-shadow: 0 10px 40px rgba(140,31,31,0.25);
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* BOTONES GT PRO */
+        .btn-gt-primario {
+            background: linear-gradient(135deg, var(--rojo-principal), var(--rojo-oscuro)) !important;
+            color: #ffffff !important;
+            border: none;
+            padding: 12px 28px;
+            font-weight: 800;
+            border-radius: 30px;
+            transition: all 0.2s;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 4px 15px rgba(140, 31, 31, 0.4);
+        }
+        .btn-gt-primario:hover {
+            background: #b30000 !important;
+            transform: translateY(-2px);
+            color: #ffffff !important;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- AVISO INTELIGENTE SI SE ABRE POR PROTOCOLO FILE:// -->
+    <div id="avisoProtocoloFile" style="display:none; background: linear-gradient(135deg, #b30000 0%, #540D0D 100%); color: #ffffff !important; padding: 14px 24px; position: sticky; top: 0; z-index: 9999; border-bottom: 3px solid #ffcc00; font-size: 0.95rem; box-shadow: 0 4px 15px rgba(0,0,0,0.4);">
+        <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
+            <div class="d-flex align-items-center gap-3">
+                <span style="font-size: 1.8rem;">⚠️</span>
+                <div>
+                    <strong style="font-size: 1.05rem;">Has abierto esta página como archivo local directo (<code>file://</code>).</strong><br>
+                    <span>Para que la tienda se conecte en tiempo real con MySQL y PHP en Laragon, ábrela desde tu servidor web local:</span>
+                </div>
+            </div>
+            <div class="d-flex gap-2 align-items-center flex-wrap">
+                <a href="http://localhost/rines-gt-pro/index.html" class="btn btn-warning text-dark fw-bold px-3 py-2 shadow-sm">
+                    <i class="bi bi-box-arrow-up-right me-1"></i> Abrir en http://localhost/rines-gt-pro/
+                </a>
+                <a href="http://rines-gt-pro.test/" class="btn btn-outline-light fw-bold px-3 py-2">
+                    http://rines-gt-pro.test
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- BARRA DE NAVEGACIÓN -->
+    <nav class="navbar navbar-expand-lg fixed-top">
+        <div class="container">
+            <a class="navbar-brand d-flex align-items-center gap-2" href="index.html">
+                <img src="imagenes/logo-gt-pro.png" alt="Rines y Llantas GT Pro" class="logo-navbar">
+                <span class="logo-texto d-none d-sm-inline">RINES & LLANTAS GT <span>PRO</span></span>
+            </a>
+            <button class="navbar-toggler text-white" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu">
+                <span class="navbar-toggler-icon" style="filter:invert(1);"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navMenu">
+                <ul class="navbar-nav ms-auto align-items-center">
+                    <li class="nav-item"><a class="nav-link active" href="index.html">Inicio</a></li>
+                    <li class="nav-item"><a class="nav-link" href="catalogo.html">Catálogo 2026</a></li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="visualizador.html" style="color:#ffd700 !important;">
+                            <i class="bi bi-car-front-fill"></i> Visualizador Virtual
+                        </a>
+                    </li>
+                    <li class="nav-item"><a class="nav-link" href="catalogo.html#contacto">Contacto</a></li>
+                    <li class="nav-item ms-lg-3">
+                        <a class="btn btn-outline-light btn-sm px-3 fw-bold" href="login.html" id="botonSesion">
+                            <i class="bi bi-person"></i> Ingresar
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- ==========================================
+         CARRUSEL PRINCIPAL DE CARROS Y PROMOCIONES
+         ========================================== -->
+    <div id="carruselHero" class="carousel slide carousel-fade shadow" data-bs-ride="carousel" data-bs-interval="4500">
+        <!-- Indicadores de posición -->
+        <div class="carousel-indicators">
+            <button type="button" data-bs-target="#carruselHero" data-bs-slide-to="0" class="active" aria-current="true"></button>
+            <button type="button" data-bs-target="#carruselHero" data-bs-slide-to="1"></button>
+            <button type="button" data-bs-target="#carruselHero" data-bs-slide-to="2"></button>
+        </div>
+
+        <div class="carousel-inner">
+            <!-- SLIDE 1: RINES DEPORTIVOS Y DE LUJO -->
+            <div class="carousel-item active">
+                <div class="carrusel-hero-item" style="background-image: url('imagenes/banner-carrusel-1.png');">
+                    <div class="overlay-carrusel">
+                        <div class="container">
+                            <div class="carrusel-caption-custom">
+                                <span class="badge bg-danger px-3 py-2 mb-3 fw-bold fs-6">
+                                    <i class="bi bi-fire"></i> LÍNEA SPORT & FORJADOS 2026
+                                </span>
+                                <h1>Transforma el Estilo de tu Carro</h1>
+                                <p>Rines forjados y deportivos en aleaciones aeroespaciales de 17" a 22". Calidad prémium, garantía certificada y despacho a toda Colombia.</p>
+                                <div class="d-flex gap-3 flex-wrap">
+                                    <a href="catalogo.html" class="btn-gt-primario btn-lg">
+                                        <i class="bi bi-shop"></i> Explorar Catálogo
+                                    </a>
+                                    <a href="visualizador.html" class="btn btn-outline-light btn-lg fw-bold rounded-pill px-4">
+                                        <i class="bi bi-cpu"></i> Probar con IA 
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SLIDE 2: VISUALIZADOR CON INTELIGENCIA ARTIFICIAL -->
+            <div class="carousel-item">
+                <div class="carrusel-hero-item" style="background-image: url('imagenes/banner-carrusel-2.png');">
+                    <div class="overlay-carrusel">
+                        <div class="container">
+                            <div class="carrusel-caption-custom">
+                                <span class="badge bg-info text-dark px-3 py-2 mb-3 fw-bold fs-6">
+                                    <i class="bi bi-magic"></i> INNOVACIÓN AUTOMOTRIZ CON IA
+                                </span>
+                                <h1>Pruébalos en tu Carro Antes de Comprar</h1>
+                                <p>Sube la foto de tu vehículo y nuestra Inteligencia Artificial montará el rin seleccionado con sombras hiperrealistas y análisis técnico de compatibilidad.</p>
+                                <div class="d-flex gap-3 flex-wrap">
+                                    <a href="visualizador.html" class="btn-gt-primario btn-lg">
+                                        <i class="bi bi-car-front-fill me-1"></i> Iniciar Visualizador Virtual
+                                    </a>
+                                    <a href="catalogo.html" class="btn btn-outline-light btn-lg fw-bold rounded-pill px-4">
+                                        Ver Modelos Disponibles
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SLIDE 3: PROMOCIÓN DEL MES: COMBOS -->
+            <div class="carousel-item">
+                <div class="carrusel-hero-item" style="background-image: url('imagenes/banner-carrusel-3.png');">
+                    <div class="overlay-carrusel">
+                        <div class="container">
+                            <div class="carrusel-caption-custom">
+                                <span class="badge bg-warning text-dark px-3 py-2 mb-3 fw-bold fs-6">
+                                    <i class="bi bi-tag-fill"></i> OFERTA ESPECIAL DEL MES
+                                </span>
+                                <h1>Combos Rines + Llantas con 25% OFF</h1>
+                                <p>Lleva tu juego completo de 4 rines con llantas de alto agarre, pernos de seguridad con llave codificada y montaje listo. Facturación oficial inmediata.</p>
+                                <div class="d-flex gap-3 flex-wrap">
+                                    <a href="catalogo.html?filtro=rines" class="btn-gt-primario btn-lg">
+                                        <i class="bi bi-cart-check-fill"></i> Ver Promociones
+                                    </a>
+                                    <a href="https://wa.me/573225817510?text=Hola%20GT%20Pro!%20Quisiera%20asesoria%20sobre%20el%20combo%20de%20Rines%20con%20Llantas" target="_blank" class="btn btn-success btn-lg fw-bold rounded-pill px-4">
+                                        <i class="bi bi-whatsapp"></i> Asesoría WhatsApp
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Controles Anterior / Siguiente -->
+        <button class="carousel-control-prev" type="button" data-bs-target="#carruselHero" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon"></span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#carruselHero" data-bs-slide="next">
+            <span class="carousel-control-next-icon"></span>
+        </button>
+    </div>
+
+    <!-- ==========================================
+         CÓMO FUNCIONA EL VISUALIZADOR VIRTUAL
+         ========================================== -->
+    <section class="py-5 bg-white border-bottom">
+        <div class="container">
+            <h2 class="seccion-titulo">¿Cómo Funciona el Visualizador Virtual? 🚗</h2>
+            <p class="seccion-subtitulo">Una experiencia virtual única en 4 simples pasos para que tomes la mejor decisión de compra.</p>
+
+            <div class="row g-4">
+                <div class="col-md-3">
+                    <div class="tarjeta-feature">
+                        <span class="icono-grande">📸</span>
+                        <h4 class="fw-bold mb-2">1. Sube tu Carro</h4>
+                        <p class="text-secondary small">Carga una foto de perfil de tu vehículo o usa uno de nuestros 3 modelos de muestra.</p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="tarjeta-feature">
+                        <span class="icono-grande">🛞</span>
+                        <h4 class="fw-bold mb-2">2. Elige el Rin</h4>
+                        <p class="text-secondary small">Selecciona el diseño del inventario real (Titan, Spider, Hyper Silver, Off-Road).</p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="tarjeta-feature">
+                        <span class="icono-grande">🤖</span>
+                        <h4 class="fw-bold mb-2">3. Síntesis IA</h4>
+                        <p class="text-secondary small">La IA procesa sombras, iluminación y montaje realista en ambas ruedas.</p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="tarjeta-feature">
+                        <span class="icono-grande">📋</span>
+                        <h4 class="fw-bold mb-2">4. Cotiza Directo</h4>
+                        <p class="text-secondary small">Envía el diseño generado al administrador con 1 clic para coordinar despacho y precio.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="text-center mt-4 pt-2">
+                <a href="visualizador.html" class="btn-gt-primario btn-lg">
+                    <i class="bi bi-magic"></i> Probar Ahora el Visualizador Virtual
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==========================================
+         PRODUCTOS DESTACADOS DEL INVENTARIO
+         ========================================== -->
+    <section class="py-5">
+        <div class="container">
+            <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap">
+                <div>
+                    <h2 style="font-weight:900; color:#111111; margin:0;">Modelos Más Vendidos</h2>
+                    <p style="color:#666; margin:0;">Disponibilidad inmediata con despacho y facturación electrónica.</p>
+                </div>
+                <a href="catalogo.html" class="btn btn-outline-dark fw-bold btn-sm mt-2 mt-md-0">
+                    Ver Todos los Productos →
+                </a>
+            </div>
+
+            <div class="row g-4">
+                <!-- Producto 1 -->
+                <div class="col-md-6 col-lg-3">
+                    <div class="tarjeta-prod-home">
+                        <div class="caja-img">
+                            <img src="imagenes/rin-titan.png" alt="Rin Titanium 20">
+                        </div>
+                        <div class="cuerpo">
+                            <span class="badge bg-danger text-white w-auto align-self-start mb-2">RINES 20"</span>
+                            <h5 class="fw-bold mb-1">Rin Deportivo 20" Titan</h5>
+                            <p class="text-secondary small mb-3">Aleación ultraligera con 5 radios dobles y acabado titanio.</p>
+                            <div class="fw-bold fs-5 text-danger mb-3">$1.200.000 COP</div>
+                            <a href="visualizador.html?rin_id=1" class="btn btn-dark w-100 btn-sm fw-bold mt-auto">
+                                <i class="bi bi-cpu"></i> Probar en mi Carro
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Producto 2 -->
+                <div class="col-md-6 col-lg-3">
+                    <div class="tarjeta-prod-home">
+                        <div class="caja-img">
+                            <img src="imagenes/rin-spider.png" alt="Rin Spider 21">
+                        </div>
+                        <div class="cuerpo">
+                            <span class="badge bg-dark text-white w-auto align-self-start mb-2">FORJADO 21"</span>
+                            <h5 class="fw-bold mb-1">Rin Dark Spider Forged</h5>
+                            <p class="text-secondary small mb-3">Diseño multirradio negro mate de alta resistencia a impactos.</p>
+                            <div class="fw-bold fs-5 text-danger mb-3">$1.650.000 COP</div>
+                            <a href="visualizador.html?rin_id=5" class="btn btn-dark w-100 btn-sm fw-bold mt-auto">
+                                <i class="bi bi-cpu"></i> Probar en mi Carro
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Producto 3 -->
+                <div class="col-md-6 col-lg-3">
+                    <div class="tarjeta-prod-home">
+                        <div class="caja-img">
+                            <img src="imagenes/llanta-sport.png" alt="Llanta Ultra Grip">
+                        </div>
+                        <div class="cuerpo">
+                            <span class="badge bg-secondary text-white w-auto align-self-start mb-2">LLANTAS</span>
+                            <h5 class="fw-bold mb-1">Llanta Ultra Grip 245/40</h5>
+                            <p class="text-secondary small mb-3">Compuesto de sílice para máxima adherencia en seco y mojado.</p>
+                            <div class="fw-bold fs-5 text-danger mb-3">$580.000 COP</div>
+                            <a href="catalogo.html" class="btn btn-outline-danger w-100 btn-sm fw-bold mt-auto">
+                                <i class="bi bi-cart-plus"></i> Ver en Catálogo
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Producto 4 -->
+                <div class="col-md-6 col-lg-3">
+                    <div class="tarjeta-prod-home">
+                        <div class="caja-img">
+                            <img src="imagenes/acc-calipers.png" alt="Calipers Rojos">
+                        </div>
+                        <div class="cuerpo">
+                            <span class="badge bg-warning text-dark w-auto align-self-start mb-2 fw-bold">ACCESORIO</span>
+                            <h5 class="fw-bold mb-1">Kit Calipers Sport Look</h5>
+                            <p class="text-secondary small mb-3">Mordazas rojas de estilo deportivo resistentes al calor extremo.</p>
+                            <div class="fw-bold fs-5 text-danger mb-3">$240.000 COP</div>
+                            <a href="catalogo.html" class="btn btn-outline-danger w-100 btn-sm fw-bold mt-auto">
+                                <i class="bi bi-cart-plus"></i> Ver en Catálogo
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==========================================
+         CALL TO ACTION VISUALIZADOR IA
+         ========================================== -->
+    <section class="py-5">
+        <div class="container">
+            <div class="banner-ia-cta">
+                <div class="row align-items-center">
+                    <div class="col-lg-8">
+                        <span class="badge bg-danger px-3 py-2 mb-2 fw-bold">NO IMAGINES, MÍRALO EN VIVO</span>
+                        <h2 class="display-6 fw-bold text-white mb-2">¿Quieres ver cómo quedan antes de comprarlos?</h2>
+                        <p class="text-secondary mb-4 fs-5" style="color:#d1d5db !important;">
+                            Usa nuestro Visualizador Virtual para ver el montaje exacto con sombras en tu propio vehículo.
+                        </p>
+                        <a href="visualizador.html" class="btn-gt-primario btn-lg">
+                            <i class="bi bi-car-front-fill me-1"></i> Probar en el Visualizador Virtual
+                        </a>
+                    </div>
+                    <div class="col-lg-4 text-center d-none d-lg-block">
+                        <img src="imagenes/rin-silver.png" alt="Rin Hyper Silver" style="width:230px; height:230px; object-fit:contain; filter:drop-shadow(0 10px 25px rgba(255,50,50,0.4));">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- PIE DE PÁGINA -->
+    <footer style="background:#111111; color:#ffffff; padding:45px 0 25px; border-top:3px solid var(--rojo-principal);">
+        <div class="container">
+            <div class="row g-4 mb-4">
+                <div class="col-md-4">
+                    <img src="imagenes/logo-gt-pro.png" alt="Rines y Llantas GT Pro" style="height:55px; margin-bottom:15px; filter:drop-shadow(0 2px 6px rgba(0,0,0,0.5));">
+                    <h5 class="fw-bold text-white mb-2">RINES & LLANTAS GT PRO</h5>
+                    <p class="text-secondary small" style="color:#aaa !important;">
+                        Especialistas en rines forjados, rines deportivos, llantas de alto agarre y accesorios exclusivos para todo tipo de vehículos.
+                    </p>
+                </div>
+                <div class="col-md-4">
+                    <h6 class="fw-bold text-danger text-uppercase">Navegación</h6>
+                    <ul class="list-unstyled small">
+                        <li class="mb-1"><a href="catalogo.html" class="text-secondary text-decoration-none" style="color:#ccc !important;">• Catálogo Oficial</a></li>
+                        <li class="mb-1"><a href="visualizador.html" class="text-secondary text-decoration-none" style="color:#ccc !important;">• Visualizador con Inteligencia Artificial</a></li>
+                        <li class="mb-1"><a href="carrito.html" class="text-secondary text-decoration-none" style="color:#ccc !important;">• Carrito de Compras</a></li>
+                        <li class="mb-1"><a href="admin.html" class="text-secondary text-decoration-none" style="color:#ccc !important;">• Panel del Administrador</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-4">
+                    <h6 class="fw-bold text-danger text-uppercase">Soporte & Contacto</h6>
+                    <p class="small text-secondary mb-1" style="color:#ccc !important;">📍 Carrera 11 # 18-30, Sogamoso, Boyacá</p>
+                    <p class="small text-secondary mb-1" style="color:#ccc !important;">📞 WhatsApp: +57 322 581 7510</p>
+                    <p class="small text-secondary" style="color:#ccc !important;">✉️ Correo: soporte@rinesgt.com</p>
+                </div>
+            </div>
+            <div class="text-center pt-3 border-top border-secondary small" style="color:#888;">
+                © 2026 Rines y Llantas GT Pro — Todos los derechos reservados.
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="js/auth.js?v=3.0"></script>
+    <script src="js/movil-pwa.js?v=3.0"></script>
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        if (window.location.protocol === 'file:') {
+            const aviso = document.getElementById('avisoProtocoloFile');
+            if (aviso) aviso.style.display = 'block';
+        }
+
+        const carrito = JSON.parse(localStorage.getItem('carrito') || '[]');
+        const totalItems = carrito.reduce((sum, item) => sum + (parseInt(item.cantidad) || 1), 0);
+        const b = document.getElementById('badgeIndexCarrito');
+        if (b) b.textContent = totalItems;
+    });
+    </script>
+</body>
+</html>

@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Mi Perfil — Rines y Llantas GT Pro</title>
+    
+    <link rel="icon" type="image/png" href="imagenes/favicon.png">
+    <link rel="apple-touch-icon" href="imagenes/app-icon-192.png">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#8C1F1F">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Rines GT Pro">
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="css/estilos.css">
+    <style>
+        .perfil-seccion { 
+            padding: 80px 0 60px; 
+            min-height: 100vh; 
+            background: #f9f9f9; 
+        }
+        .form-perfil { 
+            background: white; 
+            padding: 40px; 
+            border-radius: 16px; 
+            box-shadow: 0 4px 25px rgba(0,0,0,0.08); 
+            max-width: 650px; 
+            margin: 0 auto; 
+            border: 1px solid #eee;
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar navbar-expand-lg fixed-top">
+        <div class="container">
+            <a class="navbar-brand d-flex align-items-center gap-2" href="panel-cliente.html">
+                <img src="imagenes/logo-gt-pro.png" alt="Rines y Llantas GT Pro" class="logo-navbar">
+                <span class="logo-texto">← Volver a Mi Panel</span>
+            </a>
+        </div>
+    </nav>
+
+    <section class="perfil-seccion">
+        <div class="container">
+            <div class="form-perfil">
+                <h2 style="font-weight:900; color:var(--rojo-profundo); margin-bottom:10px;">👤 Editar Mi Perfil</h2>
+                <p style="color:#666; margin-bottom:30px;">Tus datos se guardan directamente en tu cuenta de cliente.</p>
+                
+                <form id="formPerfilDirecto">
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Nombre Completo *</label>
+                            <input type="text" id="edit_nombre" class="form-control" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Correo Electrónico *</label>
+                            <input type="email" id="edit_email" class="form-control" required>
+                        </div>
+                    </div>
+
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Teléfono / WhatsApp</label>
+                            <input type="text" id="edit_telefono" class="form-control" placeholder="310 123 4567">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Ciudad</label>
+                            <input type="text" id="edit_ciudad" class="form-control" placeholder="Sogamoso, Boyacá">
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Dirección de Entrega</label>
+                        <input type="text" id="edit_direccion" class="form-control" placeholder="Calle 15 # 12-45">
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label fw-bold">Nueva Contraseña <small class="text-muted fw-normal">(Dejar en blanco si no la cambias)</small></label>
+                        <input type="password" id="edit_clave" class="form-control" placeholder="Mínimo 6 caracteres">
+                    </div>
+
+                    <button type="submit" class="btn btn-gt-primario w-100 py-3 fw-bold" id="btnGuardar">
+                        <i class="bi bi-save"></i> Guardar Cambios en la Cuenta
+                    </button>
+                    <p id="mensajePerfil" style="margin-top:15px; font-weight:600; text-align:center;"></p>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        let clienteId = 0;
+
+        document.addEventListener('DOMContentLoaded', async function() {
+            // Verificar sesión con el servidor
+            try {
+                const res = await fetch('api/auth.php?accion=sesion');
+                const data = await res.json();
+                if (data.exito && data.usuario) {
+                    clienteId = data.usuario.id;
+                    document.getElementById('edit_nombre').value = data.usuario.nombre || '';
+                    document.getElementById('edit_email').value = data.usuario.email || '';
+                    document.getElementById('edit_telefono').value = data.usuario.telefono || '';
+                    document.getElementById('edit_ciudad').value = data.usuario.ciudad || '';
+                    document.getElementById('edit_direccion').value = data.usuario.direccion || '';
+                    return;
+                }
+            } catch (e) {}
+
+            // Si no hay sesión
+            if (localStorage.getItem('sesionActivaCliente') !== 'true') {
+                window.location.href = 'login.html?destino=perfil.html';
+                return;
+            }
+            clienteId = localStorage.getItem('clienteId') || 1;
+            document.getElementById('edit_nombre').value = localStorage.getItem('nombreCliente') || '';
+            document.getElementById('edit_email').value = localStorage.getItem('emailCliente') || '';
+        });
+
+        document.getElementById('formPerfilDirecto').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const btn = document.getElementById('btnGuardar');
+            const msg = document.getElementById('mensajePerfil');
+            btn.disabled = true;
+            btn.textContent = 'Guardando...';
+
+            const payload = {
+                id: clienteId,
+                nombre: document.getElementById('edit_nombre').value.trim(),
+                email: document.getElementById('edit_email').value.trim(),
+                telefono: document.getElementById('edit_telefono').value.trim(),
+                ciudad: document.getElementById('edit_ciudad').value.trim(),
+                direccion: document.getElementById('edit_direccion').value.trim(),
+                clave: document.getElementById('edit_clave').value.trim()
+            };
+
+            try {
+                const res = await fetch('api/auth.php?accion=actualizar_perfil', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(payload)
+                });
+                const data = await res.json();
+                if (data.exito) {
+                    msg.textContent = '✅ ' + data.mensaje;
+                    msg.style.color = 'green';
+                    localStorage.setItem('nombreCliente', payload.nombre);
+                    localStorage.setItem('emailCliente', payload.email);
+                    setTimeout(() => window.location.href = 'panel-cliente.html', 1200);
+                } else {
+                    msg.textContent = '⚠️ ' + data.mensaje;
+                    msg.style.color = '#dc3545';
+                }
+            } catch (err) {
+                msg.textContent = 'Error de conexión con el servidor.';
+                msg.style.color = '#dc3545';
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="bi bi-save"></i> Guardar Cambios en la Cuenta';
+            }
+        });
+    </script>
+    <script src="js/movil-pwa.js"></script>
+</body>
+</html>
